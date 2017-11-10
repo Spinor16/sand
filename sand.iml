@@ -7,5 +7,18 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/Java/ejml-v0.32-libs" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/Java/ejml-v0.32-libs" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/Java/ejml-v0.32-libs" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Java/ejml-v0.32-libs" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>
