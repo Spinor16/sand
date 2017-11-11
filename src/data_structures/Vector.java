@@ -14,4 +14,25 @@ public class Vector extends SimpleMatrix {
         this.dimension = vector.length;
     }
 
+    public Vector mult(double b){
+        return (Vector) this.divide(1/b);
+
+    }
+
+    public double norm2(){
+        return this.transpose().dot(this);
+    }
+
+    public double norm(){
+        return Math.sqrt(this.norm2());
+    }
+
+    public static Vector rotate(double alpha,SimpleMatrix matrix){
+        SimpleMatrix rotMatrix = new SimpleMatrix(new double[][]
+                                          {{Math.cos(alpha), Math.sin(alpha)},
+                                          {-Math.sin(alpha), Math.cos(alpha)}});
+
+        return (Vector) rotMatrix.mult(matrix);
+    }
+
 }

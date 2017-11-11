@@ -4,13 +4,15 @@ public class Particle {
     public Vector position;
     public Vector velocity;
 
-    private final double mass;
-
+    public final double mass;
+    public final double radius;
     public int index;
 
     public Particle(int dimensions, double[] position, double[] velocity) {
         //mass
-        mass = 1;
+        this.mass = 1;
+
+        this.radius = 1;
 
         //position
         this.position = new Vector(position);
