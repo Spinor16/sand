@@ -3,6 +3,7 @@ import utils.IO;
 public class CollisionEvent implements Comparable<CollisionEvent> {
     private double t;
     private int i, j;
+
     /**
      * Constructor
      * @param t time at which the collision occurs

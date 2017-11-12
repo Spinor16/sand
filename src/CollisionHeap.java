@@ -38,19 +38,34 @@ public class CollisionHeap {
         }
     }
 
+
     public CollisionEvent removeMin() throws HeapException {
-        CollisionEvent min;
+        // FixMe: Could be optimized, because some asumptions can be made for remove(1) that then don't have to be checked in remove().
+        return remove(1);
+    }
+
+    public CollisionEvent remove(int nodeIndex) throws HeapException {
+        CollisionEvent deletedEvent;
         if (isEmpty()) {
             throw new HeapException("Heap is empty");
-        } else {
-            min = events[1];
-            events[1] = events[heapSize];
+        }
+        else if (nodeIndex > heapSize || nodeIndex <= 0) {
+            throw new HeapException("Node with index " + nodeIndex + " does not exist");
+        }
+        else {
+            deletedEvent = events[nodeIndex];
+            events[nodeIndex] = events[heapSize];
             heapSize--;
             if (heapSize > 0) {
-                siftDown(1);
+                if (nodeIndex > 1 && events[nodeIndex].compareTo(events[parentIndex(nodeIndex)]) < 0) {
+                    siftUp(nodeIndex);
+                }
+                else {
+                    siftDown(nodeIndex);
+                }
             }
         }
-        return min;
+        return deletedEvent;
     }
 
     private void siftUp(int nodeIndex) {
@@ -92,6 +107,8 @@ public class CollisionHeap {
     public boolean isEmpty() {
         return heapSize <= 0;
     }
+
+    public void clear() {heapSize = 0;}
 
     private int lChildIndex(int i) {
         return i*2;
