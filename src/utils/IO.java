@@ -18,10 +18,10 @@ public class IO {
     public static <T> String toString(T[] array, int start, int end) {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
-        for (int i = start; i < end-1; i++) {
+        for (int i = start; i < end - 1; i++) {
             sb.append(array[i]).append(",\n");
         }
-        sb.append(array[end]).append("]");
+        sb.append(array[end - 1]).append("]");
         return sb.toString();
     }
 
@@ -35,7 +35,7 @@ public class IO {
         for (int i = start; i < end - 1; i++) {
             sb.append(a[i]).append(", ");
         }
-        sb.append(a[end]).append("]");
+        sb.append(a[end - 1]).append("]");
         return sb.toString();
     }
 
@@ -49,7 +49,7 @@ public class IO {
         for (int i = start; i < end - 1; i++) {
             sb.append(a[i]).append(", ");
         }
-        sb.append(a[end]).append("]");
+        sb.append(a[end - 1]).append("]");
         return sb.toString();
     }
 }
