@@ -1,4 +1,4 @@
-import utils.IO;
+package data_structures;
 
 public class CollisionEvent implements Comparable<CollisionEvent> {
     private double t;
