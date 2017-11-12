@@ -1,7 +1,8 @@
+import utils.IO;
+
 public class CollisionEvent implements Comparable<CollisionEvent> {
     private double t;
     private int i, j;
-
     /**
      * Constructor
      * @param t time at which the collision occurs
@@ -39,6 +40,10 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
             CollisionEvent other = (CollisionEvent) obj;
             return ((Double)this.t).equals(other.t);
         }
+    }
+
+    public String toString() {
+        return ("{" + t + ", " + i + ", " + j + "}");
     }
 }
 
