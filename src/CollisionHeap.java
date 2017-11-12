@@ -3,9 +3,10 @@ import utils.IO;
 
 public class CollisionHeap {
 
-    CollisionEvent[] events;
-    CollisionEvent[][] eventMatrix;
-    int heapSize = 0;
+    private CollisionEvent[] events;
+    private final int[][] indexMap;
+    private int heapSize = 0;
+    int maxSize;
 
     /**
      * Constructor
@@ -13,7 +14,8 @@ public class CollisionHeap {
      */
     public CollisionHeap(int size) {
         events = new CollisionEvent[size+1];
-        eventMatrix = new CollisionEvent[size][size];
+        indexMap = new int[size][size];
+        maxSize = size;
     }
 
     public void insert(CollisionEvent event) throws HeapException{
@@ -23,9 +25,17 @@ public class CollisionHeap {
         else {
             heapSize++;
             events[heapSize] = event;
+            try {
+                indexMap[event.i()][event.j()] = heapSize;
+            }
+            catch (IndexOutOfBoundsException e) {
+                throw new IndexOutOfBoundsException(
+                        "Indices (i,j)=(" + event.i() + "," + event.j() + ") of event might be bigger than max index "
+                        + (maxSize-1) + " of heap."
+                );
+            }
             siftUp(heapSize);
         }
-
     }
 
     public CollisionEvent removeMin() throws HeapException {
@@ -49,6 +59,8 @@ public class CollisionHeap {
             parentIndex = parentIndex(nodeIndex);
             if (events[nodeIndex].compareTo(events[parentIndex]) < 0) {
                 Array.swap(events, nodeIndex, parentIndex);
+                Array.swap(indexMap, events[nodeIndex].i(), events[nodeIndex].j(), events[parentIndex].i(),
+                        events[parentIndex].j());
                 siftUp(parentIndex);
             }
         }
@@ -71,6 +83,8 @@ public class CollisionHeap {
         }
         if (events[nodeIndex].compareTo(events[minIndex]) > 0) {
             Array.swap(events, minIndex, nodeIndex);
+            Array.swap(indexMap, events[nodeIndex].i(), events[nodeIndex].j(), events[minIndex].i(),
+                    events[minIndex].j());
             siftDown(minIndex);
         }
     }

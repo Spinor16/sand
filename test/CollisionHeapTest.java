@@ -16,10 +16,10 @@ class CollisionHeapTest {
         CollisionHeap heap = new CollisionHeap(nEvents);
         Random random = new Random();
         for (int _ = 0; _ < nEvents; _++) {
-            int i = ((int) (random.nextDouble() * (nEvents + 1))); // Get random integer between 0 and nEvents.
-            int j = ((int) (random.nextDouble() * (nEvents + 1))); // nEvents + 1 because nextDouble [0,1)
+            int i = ((int) (random.nextDouble() * (nEvents))); // Get random integer between 0 and nEvents-1.
+            int j = ((int) (random.nextDouble() * (nEvents))); // nEvents because nextDouble yields [0,1)
             while (i == j) {
-                j = ((int) (random.nextDouble() * (nEvents + 1)));
+                j = ((int) (random.nextDouble() * (nEvents)));
             }
             heap.insert(new CollisionEvent(random.nextDouble(), i, j));
         }
@@ -38,14 +38,14 @@ class CollisionHeapTest {
     }
 
     /**
-     * Test that heap throws exception
+     * Test that heap throws exception when trying to insert event into full heap.
      * @throws HeapException
      */
     @Test
     void insertThrowsErrorWhenFull() throws HeapException{
         CollisionHeap heap = new CollisionHeap(1);
-        heap.insert(new CollisionEvent(1,1,2));
-        assertThrows(HeapException.class, () -> heap.insert(new CollisionEvent(2, 3, 1)));
+        heap.insert(new CollisionEvent(1,0,0));
+        assertThrows(HeapException.class, () -> heap.insert(new CollisionEvent(2, 0, 0)));
     }
 
     @Test
