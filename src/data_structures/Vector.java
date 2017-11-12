@@ -35,4 +35,12 @@ public class Vector extends SimpleMatrix {
         return (Vector) rotMatrix.mult(matrix);
     }
 
+    public double get(int index){
+        return this.get(index,0);
+    }
+
+    public void set(int index,double value){
+        this.set(index,value);
+    }
+
 }

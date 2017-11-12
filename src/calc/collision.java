@@ -27,10 +27,10 @@ public class collision {
 
         double dist = particle1.radius + particle2.radius;
         double sqrt = Math.sqrt(4 * dist * DV.norm2()
-                                - DV2.get(0,0) * DX2.get(1,0)
-                                - DV2.get(1,0) * DX2.get(0,0)
-                                + 2 * DV.get(0,0) * DV.get(1,0)
-                                * DX.get(0,0) * DX.get(1,0));
+                                - DV2.get(0) * DX2.get(1)
+                                - DV2.get(1) * DX2.get(0)
+                                + 2 * DV.get(0) * DV.get(1)
+                                * DX.get(0) * DX.get(1));
 
         double subtract = DV.transpose().dot(DX);
 
@@ -63,7 +63,7 @@ public class collision {
         Vector TL = (Vector) A.solve(DX);
 
 
-        return TL.get(0,0) - particle.radius / Math.sin(alpha) / v;
+        return TL.get(0) - particle.radius / Math.sin(alpha) / v;
     }
 
     /**
@@ -91,15 +91,15 @@ public class collision {
         Vector vPrime1 = Vector.rotate(phi, particle1.velocity);
         Vector vPrime2 = Vector.rotate(phi, particle2.velocity);
 
-        vPrime1.set(0,0,    (particle1.mass - particle2.mass) / (particle1.mass + particle2.mass)
-                                            * vPrime1.get(0,0)
+        vPrime1.set(0,   (particle1.mass - particle2.mass) / (particle1.mass + particle2.mass)
+                                            * vPrime1.get(0)
                                             + 2 * particle2.mass / (particle1.mass + particle2.mass)
-                                            * vPrime2.get(0,0));
+                                            * vPrime2.get(0));
 
-        vPrime2.set(0,0,    2 * particle1.mass / (particle1.mass + particle2.mass)
-                                            * vPrime2.get(0,0)
+        vPrime2.set(0, 2 * particle1.mass / (particle1.mass + particle2.mass)
+                                            * vPrime2.get(0)
                                             + (particle2.mass - particle1.mass) / (particle1.mass + particle2.mass)
-                                            * vPrime2.get(0,0));
+                                            * vPrime2.get(0));
 
         particle1.velocity = Vector.rotate(-phi, vPrime1);
         particle2.velocity = Vector.rotate(-phi, vPrime2);
@@ -122,11 +122,11 @@ public class collision {
      * might want to change this.
      */
     public void resolveCollision(Particle particle, Boundary boundary, double collisionTime){
-        double alpha = Math.acos(boundary.direction.get(0,0)/boundary.direction.norm());
+        double alpha = Math.acos(boundary.direction.get(0) / boundary.direction.norm());
         Vector xColl = (Vector) particle.position.plus(particle.velocity.mult(collisionTime));
 
         Vector vPrime = Vector.rotate(alpha,particle.velocity);
-        vPrime.set(1,0, -particle.velocity.get(1,0));
+        vPrime.set(1, -particle.velocity.get(1));
         particle.velocity = Vector.rotate(-alpha,vPrime);
 
         particle.position = (Vector) xColl.minus(particle.velocity.mult(collisionTime));
