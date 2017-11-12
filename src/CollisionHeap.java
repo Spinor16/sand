@@ -58,8 +58,8 @@ public class CollisionHeap {
         int lChildIndex, rChildIndex, minIndex;
         lChildIndex = lChildIndex(nodeIndex);
         rChildIndex = rChildIndex(nodeIndex);
-        if (rChildIndex >= heapSize) {
-            if (lChildIndex >= heapSize)
+        if (rChildIndex > heapSize) {
+            if (lChildIndex > heapSize)
                 return;
             else
                 minIndex = lChildIndex;

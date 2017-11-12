@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Test;
+import utils.IO;
 
 import java.util.Random;
 
@@ -11,7 +12,7 @@ class CollisionHeapTest {
      */
     @Test
     void insertAndRemoveMin() throws HeapException{
-        int nEvents = 50;
+        int nEvents = 10000;
         CollisionHeap heap = new CollisionHeap(nEvents);
         Random random = new Random();
         for (int _ = 0; _ < nEvents; _++) {
@@ -24,12 +25,14 @@ class CollisionHeapTest {
         }
 
         CollisionEvent min  = heap.removeMin();
-        CollisionEvent next_min;
+        CollisionEvent nextMin;
         int counter = 1;
+
         while (!heap.isEmpty()) {
             counter++;
-            next_min = heap.removeMin();
-            assertTrue(min.compareTo(next_min) < 0);
+            nextMin = heap.removeMin();
+            assertTrue(min.compareTo(nextMin) < 0);
+            min = nextMin;
         }
         assertEquals(counter, nEvents);
     }
