@@ -73,3 +73,5 @@ fabric.properties
 
 # other
 .directory
+*.DS_Store
+*.iml
