@@ -13,11 +13,11 @@ public class Drawing {
     }
 
 
-    public static Rectangle transform(double x, double y, double width, double height, double scale) {
-        return transform(x, y, width, height, scale, false);
+    public static Rectangle transform2D(double x, double y, double width, double height, double scale) {
+        return transform2D(x, y, width, height, scale, false);
     }
 
-    public static Rectangle transform(double x, double y, double width, double height, double scale, boolean center) {
+    public static Rectangle transform2D(double x, double y, double width, double height, double scale, boolean center) {
         // Center values about x, y
         if (center) {
             x -= width/2;
