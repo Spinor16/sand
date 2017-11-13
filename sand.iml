@@ -21,5 +21,6 @@
         <jarDirectory url="file://$USER_HOME$/Java/ejml-v0.32-libs" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="EJML" level="project" />
   </component>
 </module>

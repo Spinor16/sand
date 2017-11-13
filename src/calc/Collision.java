@@ -5,7 +5,7 @@ import data_structures.Particle;
 import data_structures.Vector;
 import org.ejml.simple.SimpleMatrix;
 
-public class collision {
+public class Collision {
 
 
     /**
@@ -14,9 +14,9 @@ public class collision {
      * @param particle2
      * @return collisionTime
      *
-     * Calculates the collision time of two particles.
+     * Calculates the Collision time of two particles.
      * This works only for 2dim.
-     * If no collision time is found the argument of the square root will be negative. This still needs to be changed.
+     * If no Collision time is found the argument of the square root will be negative. This still needs to be changed.
      */
     public double findCollisionTime(Particle particle1, Particle particle2){
         Vector DV = (Vector) particle1.velocity.minus(particle2.velocity);
@@ -43,13 +43,13 @@ public class collision {
      * @param boundary
      * @return collisionTime
      *
-     * Calculates the collision time of a linear boundary and a particle. This works for a non-moving boundary only, since
+     * Calculates the Collision time of a linear boundary and a particle. This works for a non-moving boundary only, since
      * the positional time invariance of the boundary needs to be satisfied when calculating the time back from the
      * intersection of boundary.direction and particle.velocity.
      *
      * This works only for 2dim.
      *
-     * Non defined behaviour when no collision time is found. This still needs to be changed.
+     * Non defined behaviour when no Collision time is found. This still needs to be changed.
      *
      */
     //
@@ -74,7 +74,7 @@ public class collision {
      *
      * Particle1 and particle2 are updated to the outgoing velocities. Their position is projected backwards in time,
      * such that after the call particle.position + collisionTime * particle.velocity yields the outgoing state of
-     * the collision.
+     * the Collision.
      *
      * There are more calculations than need to be done as particle.velocity[1,0] isn't changed in the rotated frame. We
      * might want to change this.
@@ -116,7 +116,7 @@ public class collision {
      *
      * Particle1 is updated to the outgoing velocity. The position is projected backwards in time,
      * such that after the call particle.position + collisionTime * particle.velocity yields the outgoing state of
-     * the collision.
+     * the Collision.
      *
      * There are more calculations than need to be done as particle.velocity[1,0] isn't changed in the rotated frame. We
      * might want to change this.

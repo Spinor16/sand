@@ -6,7 +6,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
 
     /**
      * Constructor
-     * @param t time at which the collision occurs
+     * @param t time at which the Collision occurs
      * @param i index of first colliding particle
      * @param j index of second colliding particle
      */
