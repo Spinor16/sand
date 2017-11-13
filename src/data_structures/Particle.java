@@ -1,12 +1,12 @@
 package data_structures;
 
 import utils.Drawing;
-import utils.IO;
+
 import java.awt.*;
 
 public class Particle {
-    public Vector position;
-    public Vector velocity;
+    public double[] position;
+    public double[] velocity;
 
     public final double mass;
     public final double radius;
@@ -21,15 +21,15 @@ public class Particle {
         this.radius = 1;
 
         //position
-        this.position = new Vector(position);
+        this.position = position;
 
         //velocity
-        this.velocity = new Vector(velocity);
+        this.velocity = velocity;
 
     }
 
 
-    int dimensions() { return position.dimension; }
+    int dimensions() { return position.length; }
 
     public double mass() { return mass; }
 
@@ -67,8 +67,8 @@ public class Particle {
 
     void paint2D(Graphics g, double scale, int size) {
         Rectangle scaledValues = Drawing.transform2D(
-                position.get(0),
-                position.get(1),
+                position[0],
+                position[1],
                 size/scale,
                 size/scale,
                 scale,

@@ -2,42 +2,38 @@ package calc;
 
 import data_structures.Boundary;
 import data_structures.Particle;
-import data_structures.Vector;
 import org.ejml.simple.SimpleMatrix;
 
+import java.util.Vector;
+
 public class Collision {
-    //fixme: Stadel&Co. said we should not use vector class, just use arrays. Less computational effort -> faster
     private static double[] g = {0, 9.81};
-    public static Vector gravitationalAcc = new Vector(g);
     /**
      *
      * @param particle1
      * @param particle2
      * @return collisionTime
      *
-     * Calculates the Collision time of two particles.
+     * Calculates the collision time of two particles.
      * This works only for 2dim.
-     * If no Collision time is found the argument of the square root will be negative. This still needs to be changed.
+     * If no collision time is found, a negative time is returned.
      */
     public double findCollisionTime(Particle particle1, Particle particle2){
-        Vector DV = (Vector) particle1.velocity.minus(particle2.velocity);
-        Vector DX = (Vector) particle1.position.minus(particle2.position);
 
-        //fixme: why so complicated? DV2&DX2 not efficient and not necessary. Nomenclature also a bit fuzzy
-        Vector DV2 = (Vector) DV.elementPower(2);
-        Vector DX2 = (Vector) DX.elementPower(2);
+        double[] DV = VectorCalculus.minus(particle1.velocity,particle2.velocity);
+        double[] DX = VectorCalculus.minus(particle1.position,particle2.position);
 
-        double dist = particle1.radius + particle2.radius;
-        double sqrt = Math.sqrt(4 * dist * DV.norm2()
-                                - DV2.get(0) * DX2.get(1)
-                                - DV2.get(1) * DX2.get(0)
-                                + 2 * DV.get(0) * DV.get(1)
-                                * DX.get(0) * DX.get(1));
+        double[] DV2 = VectorCalculus.elementPower(DV,2);
+        double[] DX2 = VectorCalculus.elementPower(DX,2);
 
-        double subtract = DV.transpose().dot(DX);
+        double dist2 = Math.pow(particle1.radius + particle2.radius,2);
+        return (Math.sqrt(4 * dist2 * VectorCalculus.norm2(DV)
+                          - DV2[0] * DX2[1]
+                          - DV2[1] * DX2[0]
+                          + 2 * DV[0] * DV[1]
+                          * DX[0] * DX[1])
+                - VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
 
-        double collisionTime = (sqrt - subtract)/DV.norm2();
-        return collisionTime;
     }
 
     /**
@@ -57,14 +53,14 @@ public class Collision {
      */
     //
     public double findCollisionTime(Particle particle, Boundary boundary){
-        double v = particle.velocity.norm();
+        double v = particle.velocity;
         double alpha = Math.acos(particle.velocity.dot(boundary.direction) / (v * boundary.direction.norm()));
 
-        Vector DX = (Vector) boundary.x0.minus(particle.position);
+        VectorCalculus DX = (VectorCalculus) boundary.x0.minus(particle.position);
         SimpleMatrix A = particle.velocity.combine(0,SimpleMatrix.END,boundary.direction);
 
         //fixme: what is TL?
-        Vector TL = (Vector) A.solve(DX);
+        VectorCalculus TL = (VectorCalculus) A.solve(DX);
 
 
         double collisionTime = TL.get(0) - particle.radius / (Math.sin(alpha) * v);
@@ -78,8 +74,10 @@ public class Collision {
      * @param collisionTime
      *
      * Particle1 and particle2 are updated to the outgoing velocities. Their position is projected backwards in time,
-     * such that after the call particle.position + collisionTime * particle.velocity yields the outgoing state of
-     * the Collision.
+     * such that after projecting forwards
+     *            particle.position + collisionTime * particle.velocity + 0.5 * collisionTime^2 * g
+     * yields the outgoing state of
+     * the collision and particle.velocity .
      *
      * There are more calculations than need to be done as particle.velocity[1,0] isn't changed in the rotated frame. We
      * might want to change this.
@@ -88,35 +86,49 @@ public class Collision {
     public void resolveCollision(Particle particle1, Particle particle2, double collisionTime){
         //
 
+        // Calculate position of collision for particle1 and particle2
+        //drift
+        double[] xColl1 = VectorCalculus.plus(particle1.position, VectorCalculus.mult(collisionTime, particle1.velocity));
+        //kick
+        VectorCalculus.plusSE(xColl1,VectorCalculus.mult(0.5*collisionTime*collisionTime, g));
 
-        //fixme: check gravitational acceleration
-        Vector xColl1 = (Vector) particle1.position.plus(particle1.velocity.mult(collisionTime).plus(gravitationalAcc.mult(0.5*collisionTime*collisionTime)));
-        Vector xColl2 = (Vector) particle2.position.plus(particle2.velocity.mult(collisionTime).plus(gravitationalAcc.mult(0.5*collisionTime*collisionTime)));
+        //drift
+        double[] xColl2 = VectorCalculus.plus(particle2.position, VectorCalculus.mult(collisionTime, particle2.velocity));
+        //kick
+        VectorCalculus.plusSE(xColl2,VectorCalculus.mult(0.5*collisionTime*collisionTime, g));
 
-        Vector DS = (Vector) xColl1.minus(xColl2);
+        //Calculate n,vector connecting ball centers
+        double[] n = VectorCalculus.orthogonal(VectorCalculus.minus(xColl1,xColl2));
 
-        double phi = Math.acos(DS.get(0,0)/DS.norm());
+        //Calculate rotation angle
+        double phi = Math.acos(n[0]/VectorCalculus.norm(n));
 
-        Vector vPrime1 = Vector.rotate(phi, particle1.velocity);
-        Vector vPrime2 = Vector.rotate(phi, particle2.velocity);
+        //Rotate into aligned frame
+        double[] vPrime1 = VectorCalculus.rotate(phi, particle1.velocity);
+        double[] vPrime2 = VectorCalculus.rotate(phi, particle2.velocity);
 
-        vPrime1.set(0,   (particle1.mass - particle2.mass) / (particle1.mass + particle2.mass)
-                                            * vPrime1.get(0)
-                                            + 2 * particle2.mass / (particle1.mass + particle2.mass)
-                                            * vPrime2.get(0));
+        vPrime1[0] = (particle1.mass - particle2.mass) / (particle1.mass + particle2.mass)
+                     * vPrime1[0]
+                     + 2 * particle2.mass / (particle1.mass + particle2.mass)
+                     * vPrime2[0];
 
-        vPrime2.set(0, 2 * particle1.mass / (particle1.mass + particle2.mass)
-                                            * vPrime2.get(0)
-                                            + (particle2.mass - particle1.mass) / (particle1.mass + particle2.mass)
-                                            * vPrime2.get(0));
+        vPrime2[0] = 2 * particle1.mass / (particle1.mass + particle2.mass)
+                     * vPrime2[0]
+                     + (particle2.mass - particle1.mass) / (particle1.mass + particle2.mass)
+                     * vPrime2[0];
 
-        //fixme: check gravitational acceleration again
-        particle1.velocity = (Vector) Vector.rotate(-phi, vPrime1).plus(gravitationalAcc.mult(collisionTime));
-        particle2.velocity = (Vector) Vector.rotate(-phi, vPrime2).plus(gravitationalAcc.mult(collisionTime));
+        //Rotate back
+        particle1.velocity = VectorCalculus.rotate(-phi, vPrime1);
+        particle2.velocity = VectorCalculus.rotate(-phi, vPrime2);
 
-        particle1.position = (Vector) xColl1.minus(particle1.velocity.mult(collisionTime));
-        particle2.position = (Vector) xColl1.minus(particle2.velocity.mult(collisionTime)); //fixme: added this, check
+        //Project back
+        VectorCalculus.minusSE(xColl1,VectorCalculus.mult(collisionTime,particle1.velocity));
+        VectorCalculus.minusSE(xColl1,VectorCalculus.mult(0.5*collisionTime*collisionTime,particle1.velocity));
+        particle1.velocity = xColl1;
 
+        VectorCalculus.minusSE(xColl2,VectorCalculus.mult(collisionTime,particle2.velocity));
+        VectorCalculus.minusSE(xColl2,VectorCalculus.mult(0.5*collisionTime*collisionTime,particle2.velocity));
+        particle2.velocity = xColl2;
     }
 
     /**
@@ -134,13 +146,13 @@ public class Collision {
      */
     public void resolveCollision(Particle particle, Boundary boundary, double collisionTime){
         double alpha = Math.acos(boundary.direction.get(0) / boundary.direction.norm());
-        Vector xColl = (Vector) particle.position.plus(particle.velocity.mult(collisionTime).plus(gravitationalAcc.mult(0.5*collisionTime*collisionTime))); //fixme: check
+        VectorCalculus xColl = (VectorCalculus) particle.position.plus(particle.velocity.mult(collisionTime).plus(gravitationalAcc.mult(0.5*collisionTime*collisionTime))); //fixme: check
 
-        Vector vPrime = Vector.rotate(alpha,particle.velocity);
+        VectorCalculus vPrime = VectorCalculus.rotate(alpha,particle.velocity);
         vPrime.set(1, -particle.velocity.get(1));
-        particle.velocity = (Vector) Vector.rotate(-alpha,vPrime).plus(gravitationalAcc.mult(collisionTime)); //fixme: Check
+        particle.velocity = (VectorCalculus) VectorCalculus.rotate(-alpha,vPrime).plus(gravitationalAcc.mult(collisionTime)); //fixme: Check
 
-        particle.position = (Vector) xColl.minus(particle.velocity.mult(collisionTime));
+        particle.position = (VectorCalculus) xColl.minus(particle.velocity.mult(collisionTime));
     }
 
     public void resolveCollision(Particle particle1, Particle particle2){

@@ -1,10 +1,12 @@
 package data_structures;
 
-public class Boundary {
-    public Vector x0;
-    public Vector direction;
+import calc.VectorCalculus;
 
-    public Boundary(Vector velocity, Vector x0, Vector direction) {
+public class Boundary {
+    public VectorCalculus x0;
+    public VectorCalculus direction;
+
+    public Boundary(VectorCalculus velocity, VectorCalculus x0, VectorCalculus direction) {
         this.direction = direction;
         this.x0 = x0;
     }
