@@ -10,7 +10,7 @@ class CollisionHeapTest {
 
     CollisionHeap heap;
     int nParticles = 1000;
-    int nEvents = nParticles*nParticles;
+    int nEvents = (int)(0.1*(nParticles*nParticles));
     Random random = new Random();
 
     /**
@@ -18,7 +18,7 @@ class CollisionHeapTest {
      * @throws HeapException
      */
     @BeforeEach
-    void init() throws HeapException {
+    void setUp() throws HeapException {
         heap = new CollisionHeap(nParticles);
         // Fill heap with random events.
         for (int _ = 0; _ < nEvents; _++) {
@@ -63,7 +63,7 @@ class CollisionHeapTest {
     void remove() throws HeapException {
         // Remove some random nodes from heap.
         int counter = 0;
-        for (int _ = 0; _ < nEvents /2; _++) {
+        for (int _ = 0; _ < nEvents / 2; _++) {
             int i = ((int) (random.nextDouble() * (nParticles)));
             try {
                 heap.remove(i);
@@ -103,7 +103,7 @@ class CollisionHeapTest {
     }
 
     @Test
-    void clear() {
+    void clear() throws HeapException {
         heap.clear();
         assertTrue(heap.isEmpty());
     }

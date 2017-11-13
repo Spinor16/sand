@@ -1,13 +1,17 @@
 import utils.Array;
 import utils.IO;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Collision Heap can contain N^2 number of CollisionEvents which have to corespond to N different particles,
  * i.e. the indices i and j of the events cannot be bigger than N.
  */
 public class CollisionHeap {
 
-    private CollisionEvent[] events;
+    private List<CollisionEvent> events;
     private final int[][] indexMap;
     private int heapSize = 0;
     int maxSize;
@@ -17,18 +21,19 @@ public class CollisionHeap {
      * @param N Square root of maximal size of CollisionHeap, i.e. the square root of total number of collisions.
      */
     public CollisionHeap(int N) {
-        events = new CollisionEvent[N*N + 1];
+        events = new ArrayList<CollisionEvent>(N+1);
+        events.add(null); // First element of arraylist is not used.
         indexMap = new int[N][N];
         maxSize = N*N;
     }
 
     public void insert(CollisionEvent event) throws HeapException{
-        if (heapSize == events.length - 1) {
+        if (heapSize == maxSize) { // events.length - 1) {
             throw new HeapException("Heap's underlying storage is overflow");
         }
         else {
             heapSize++;
-            events[heapSize] = event;
+            events.add(event);
             try {
                 indexMap[event.i()][event.j()] = heapSize;
             }
@@ -58,14 +63,14 @@ public class CollisionHeap {
             throw new HeapException("Node with index " + nodeIndex + " does not exist");
         }
         else {
-            deletedEvent = events[nodeIndex];
-            swappedEvent = events[heapSize];
-            events[nodeIndex] = swappedEvent;
+            deletedEvent = events.get(nodeIndex);
+            swappedEvent = events.get(heapSize);
+            events.set(nodeIndex, swappedEvent);
             indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
             indexMap[swappedEvent.i()][swappedEvent.j()] = nodeIndex;
             heapSize--;
             if (heapSize > 0) {
-                if (nodeIndex > 1 && events[nodeIndex].compareTo(events[parentIndex]) < 0) {
+                if (nodeIndex > 1 && events.get(nodeIndex).compareTo(events.get(parentIndex)) < 0) {
                     siftUp(nodeIndex);
                 }
                 else {
@@ -80,10 +85,10 @@ public class CollisionHeap {
         int parentIndex;
         if (nodeIndex != 1) {
             parentIndex = parentIndex(nodeIndex);
-            if (events[nodeIndex].compareTo(events[parentIndex]) < 0) {
-                Array.swap(events, nodeIndex, parentIndex);
-                Array.swap(indexMap, events[nodeIndex].i(), events[nodeIndex].j(), events[parentIndex].i(),
-                        events[parentIndex].j());
+            if (events.get(nodeIndex).compareTo(events.get(parentIndex)) < 0) {
+                Collections.swap(events, nodeIndex, parentIndex);
+                Array.swap(indexMap, events.get(nodeIndex).i(), events.get(nodeIndex).j(), events.get(parentIndex).i(),
+                        events.get(parentIndex).j());
                 siftUp(parentIndex);
             }
         }
@@ -101,17 +106,19 @@ public class CollisionHeap {
             else
                 smallerChildIndex = lChildIndex;
         } else {
-            if (events[lChildIndex].compareTo(events[rChildIndex]) < 0)
+            if (events.get(lChildIndex).compareTo(events.get(rChildIndex)) < 0)
                 smallerChildIndex = lChildIndex;
             else
                 smallerChildIndex = rChildIndex;
         }
 
         // Swap parent and smaller child if child is smaller than parent and recurse.
-        if (events[nodeIndex].compareTo(events[smallerChildIndex]) > 0) {
-            Array.swap(events, smallerChildIndex, nodeIndex);
-            Array.swap(indexMap, events[nodeIndex].i(), events[nodeIndex].j(), events[smallerChildIndex].i(),
-                    events[smallerChildIndex].j());
+        if (events.get(nodeIndex).compareTo(events.get(smallerChildIndex)) > 0) {
+            Collections.swap(events, smallerChildIndex, nodeIndex);
+            Array.swap(indexMap,
+                    events.get(nodeIndex).i(), events.get(nodeIndex).j(),
+                    events.get(smallerChildIndex).i(), events.get(smallerChildIndex).j()
+            );
             siftDown(smallerChildIndex);
         }
     }
@@ -135,6 +142,6 @@ public class CollisionHeap {
     }
 
     public String toString() {
-        return IO.toString(events, 1, events.length);
+        return IO.toString(events.toArray(), 1, events.size());
     }
 }
