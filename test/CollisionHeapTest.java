@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import utils.IO;
 
 import java.util.Random;
 
@@ -10,7 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class CollisionHeapTest {
 
     CollisionHeap heap;
-    int nEvents = 10000;
+    int nParticles = 1000;
+    int nEvents = nParticles*nParticles;
     Random random = new Random();
 
     /**
@@ -19,13 +19,13 @@ class CollisionHeapTest {
      */
     @BeforeEach
     void init() throws HeapException {
-        heap = new CollisionHeap(nEvents);
+        heap = new CollisionHeap(nParticles);
         // Fill heap with random events.
         for (int _ = 0; _ < nEvents; _++) {
-            int i = ((int) (random.nextDouble() * (nEvents))); // Get random integer between 0 and nEvents-1.
-            int j = ((int) (random.nextDouble() * (nEvents))); // nEvents because nextDouble yields [0,1)
+            int i = ((int) (random.nextDouble() * (nParticles))); // Get random integer between 0 and nParticles-1.
+            int j = ((int) (random.nextDouble() * (nParticles))); // nParticles because nextDouble yields [0,1)
             while (i == j) {
-                j = ((int) (random.nextDouble() * (nEvents)));
+                j = ((int) (random.nextDouble() * (nParticles)));
             }
             heap.insert(new CollisionEvent(random.nextDouble(), i, j));
         }
@@ -63,8 +63,8 @@ class CollisionHeapTest {
     void remove() throws HeapException {
         // Remove some random nodes from heap.
         int counter = 0;
-        for (int _ = 0; _ < nEvents/2; _++) {
-            int i = ((int) (random.nextDouble() * (nEvents)));
+        for (int _ = 0; _ < nEvents /2; _++) {
+            int i = ((int) (random.nextDouble() * (nParticles)));
             try {
                 heap.remove(i);
                 counter++;

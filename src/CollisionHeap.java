@@ -1,6 +1,10 @@
 import utils.Array;
 import utils.IO;
 
+/**
+ * Collision Heap can contain N^2 number of CollisionEvents which have to corespond to N different particles,
+ * i.e. the indices i and j of the events cannot be bigger than N.
+ */
 public class CollisionHeap {
 
     private CollisionEvent[] events;
@@ -10,12 +14,12 @@ public class CollisionHeap {
 
     /**
      * Constructor
-     * @param size Maximal size of CollisionHeap, i.e. the total number of collisions.
+     * @param N Square root of maximal size of CollisionHeap, i.e. the square root of total number of collisions.
      */
-    public CollisionHeap(int size) {
-        events = new CollisionEvent[size+1];
-        indexMap = new int[size][size];
-        maxSize = size;
+    public CollisionHeap(int N) {
+        events = new CollisionEvent[N*N + 1];
+        indexMap = new int[N][N];
+        maxSize = N*N;
     }
 
     public void insert(CollisionEvent event) throws HeapException{
@@ -45,7 +49,8 @@ public class CollisionHeap {
     }
 
     public CollisionEvent remove(int nodeIndex) throws HeapException {
-        CollisionEvent deletedEvent;
+        CollisionEvent deletedEvent, swappedEvent;
+        int parentIndex = parentIndex(nodeIndex);
         if (isEmpty()) {
             throw new HeapException("Heap is empty");
         }
@@ -54,10 +59,13 @@ public class CollisionHeap {
         }
         else {
             deletedEvent = events[nodeIndex];
-            events[nodeIndex] = events[heapSize];
+            swappedEvent = events[heapSize];
+            events[nodeIndex] = swappedEvent;
+            indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
+            indexMap[swappedEvent.i()][swappedEvent.j()] = nodeIndex;
             heapSize--;
             if (heapSize > 0) {
-                if (nodeIndex > 1 && events[nodeIndex].compareTo(events[parentIndex(nodeIndex)]) < 0) {
+                if (nodeIndex > 1 && events[nodeIndex].compareTo(events[parentIndex]) < 0) {
                     siftUp(nodeIndex);
                 }
                 else {
@@ -82,25 +90,29 @@ public class CollisionHeap {
     }
 
     private void siftDown(int nodeIndex) {
-        int lChildIndex, rChildIndex, minIndex;
+        int lChildIndex, rChildIndex, smallerChildIndex;
         lChildIndex = lChildIndex(nodeIndex);
         rChildIndex = rChildIndex(nodeIndex);
+
+        // Find which child is smaller.
         if (rChildIndex > heapSize) {
             if (lChildIndex > heapSize)
                 return;
             else
-                minIndex = lChildIndex;
+                smallerChildIndex = lChildIndex;
         } else {
             if (events[lChildIndex].compareTo(events[rChildIndex]) < 0)
-                minIndex = lChildIndex;
+                smallerChildIndex = lChildIndex;
             else
-                minIndex = rChildIndex;
+                smallerChildIndex = rChildIndex;
         }
-        if (events[nodeIndex].compareTo(events[minIndex]) > 0) {
-            Array.swap(events, minIndex, nodeIndex);
-            Array.swap(indexMap, events[nodeIndex].i(), events[nodeIndex].j(), events[minIndex].i(),
-                    events[minIndex].j());
-            siftDown(minIndex);
+
+        // Swap parent and smaller child if child is smaller than parent and recurse.
+        if (events[nodeIndex].compareTo(events[smallerChildIndex]) > 0) {
+            Array.swap(events, smallerChildIndex, nodeIndex);
+            Array.swap(indexMap, events[nodeIndex].i(), events[nodeIndex].j(), events[smallerChildIndex].i(),
+                    events[smallerChildIndex].j());
+            siftDown(smallerChildIndex);
         }
     }
 
