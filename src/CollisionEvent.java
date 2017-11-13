@@ -1,11 +1,21 @@
 import utils.IO;
 
+/**
+ * Contain information about one collision event.
+ *
+ * t = time at which event happens.
+ * i = index of first particle involved.
+ * j = index of second particle involved.
+ *
+ * Condition: i < j.
+ */
 public class CollisionEvent implements Comparable<CollisionEvent> {
     private double t;
     private int i, j;
 
     /**
      * Constructor
+     * @pre i<j
      * @param t time at which the collision occurs
      * @param i index of first colliding particle
      * @param j index of second colliding particle
@@ -20,6 +30,25 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
     public int i() { return i; }
     public int j() { return j; }
 
+    /**
+     * Reset attributes.
+     * @pre i<j
+     * @param t time at which the collision occurs
+     * @param i index of first colliding particle
+     * @param j index of second colliding particle
+     */
+    public void reset(double t, int i, int j) {
+        this.t = t;
+        this.i = i;
+        this.j = j;
+    }
+
+    /**
+     * Compares this to other.
+     * < 0 if this < other
+     * = 0 if this = other
+     * > 0 if this > other
+     */
     @Override
     public int compareTo(CollisionEvent other) {
         if (this.equals(other)) {
