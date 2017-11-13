@@ -81,6 +81,18 @@ public class CollisionHeap {
         return deletedEvent;
     }
 
+    public void removeEventsContainingIndex(int index) throws HeapException {
+        // Remove column where j=index.
+        for (int i = 0; i < index; i++) {
+            remove(indexMap[i][index]);
+        }
+
+        // Remove row where i=index.
+        for (int j = index + 1; j < indexMap.length; j++) {
+            remove(indexMap[index][j]);
+        }
+    }
+
     private void siftUp(int nodeIndex) {
         int parentIndex;
         if (nodeIndex != 1) {
