@@ -4,6 +4,7 @@ import org.ejml.simple.SimpleMatrix;
 
 public class VectorCalculus {
 
+    //SE means side effect: the vector passed to the function is altered.
 
     public static double norm2(double[] vector){
 
@@ -130,5 +131,8 @@ public class VectorCalculus {
         double[] ret = new double[vector.length];
         ret[0] = vector[1];
         ret[1] = -vector[0];
+
+        return ret;
     }
+
 }

@@ -3,12 +3,18 @@ package data_structures;
 import calc.VectorCalculus;
 
 public class Boundary {
-    public VectorCalculus x0;
-    public VectorCalculus direction;
+    public double[] position;
+    public double[] n; //direction
+    public double[] t; //orthogonal to direction
+    public double[] velocity;
 
-    public Boundary(VectorCalculus velocity, VectorCalculus x0, VectorCalculus direction) {
-        this.direction = direction;
-        this.x0 = x0;
+    public Boundary(double[] velocity, double[] position, double[] direction) {
+        this.n = direction;
+        VectorCalculus.divideSE(VectorCalculus.norm(n),this.n);
+        this.position = position;
+        this.t = VectorCalculus.orthogonal(n);
+        VectorCalculus.divideSE(VectorCalculus.norm(t),this.t);
+        this.velocity = velocity;
     }
 
 
