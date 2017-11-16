@@ -2,10 +2,6 @@ package calc;
 
 import data_structures.Boundary;
 import data_structures.Particle;
-import exceptions.NoCollisionException;
-import org.ejml.simple.SimpleMatrix;
-
-import java.util.Vector;
 
 public class Collision {
     private static double[] g = {0, 9.81};
