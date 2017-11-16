@@ -1,3 +1,4 @@
+import data_structures.CollisionEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

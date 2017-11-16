@@ -1,4 +1,4 @@
-import utils.IO;
+package data_structures;
 
 /**
  * Contain information about one collision event.

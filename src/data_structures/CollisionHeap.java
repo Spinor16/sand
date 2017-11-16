@@ -1,3 +1,7 @@
+package data_structures;
+
+import data_structures.CollisionEvent;
+import exceptions.HeapException;
 import utils.Array;
 import utils.IO;
 
@@ -18,7 +22,7 @@ public class CollisionHeap {
 
     /**
      * Constructor
-     * @param N Square root of maximal size of CollisionHeap, i.e. the square root of total number of collisions.
+     * @param N Square root of maximal size of data_structures.CollisionHeap, i.e. the square root of total number of collisions.
      */
     public CollisionHeap(int N) {
         events = new ArrayList<CollisionEvent>(N+1);
@@ -27,7 +31,7 @@ public class CollisionHeap {
         maxSize = N*N;
     }
 
-    public void insert(CollisionEvent event) throws HeapException{
+    public void insert(CollisionEvent event) throws HeapException {
         if (heapSize == maxSize) { // events.length - 1) {
             throw new HeapException("Heap's underlying storage is overflow");
         }

@@ -1,3 +1,6 @@
+import data_structures.CollisionEvent;
+import data_structures.CollisionHeap;
+import exceptions.HeapException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

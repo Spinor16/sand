@@ -1,3 +1,5 @@
+package data_structures;
+
 import utils.Drawing;
 import utils.IO;
 
