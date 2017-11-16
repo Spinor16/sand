@@ -4,8 +4,23 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/Java/ejml-v0.32-libs" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/Java/ejml-v0.32-libs" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/Java/ejml-v0.32-libs" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Java/ejml-v0.32-libs" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="EJML" level="project" />
   </component>
 </module>
