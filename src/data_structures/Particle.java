@@ -1,5 +1,6 @@
 package data_structures;
 
+import calc.VectorCalculus;
 import utils.Drawing;
 
 import java.awt.*;
@@ -32,6 +33,14 @@ public class Particle {
     int dimensions() { return position.length; }
 
     public double mass() { return mass; }
+
+    public double dist2(double[] vector1, double[] vector2) {
+        double norm2 = 0;
+        for (int i = 0; i < vector1.length; i++) {
+            norm2 = (vector1[i]-vector2[i])*(vector1[i]-vector2[i]);
+        }
+        return norm2;
+    }
 
     /**
     public double[] position() {

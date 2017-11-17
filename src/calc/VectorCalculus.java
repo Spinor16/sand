@@ -1,7 +1,5 @@
 package calc;
 
-import org.ejml.simple.SimpleMatrix;
-
 public class VectorCalculus {
 
     //SE means side effect: the vector passed to the function is altered.
