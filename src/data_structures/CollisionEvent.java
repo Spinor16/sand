@@ -23,12 +23,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
      * @param j index of second colliding particle
      */
     public CollisionEvent(double t, int i, int j){
-        assert t > 0;
-        assert i < j;
-
-        this.t = t;
-        this.i = i;
-        this.j = j;
+        this.reset(t, i, j);
     }
 
     public double t() { return t; }
@@ -45,7 +40,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
     public void reset(double t, int i, int j){
         assert t > 0;
         assert i < j;
-        
+
         this.t = t;
         this.i = i;
         this.j = j;
