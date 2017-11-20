@@ -166,7 +166,7 @@ public class BinaryTree {
         return queue;
     }
 
-    void kNearestNeighbours(double[] pos, int k, Node currentNode, IFixedPriorityQueue queue) {
+    public void kNearestNeighbours(double[] pos, int k, Node currentNode, IFixedPriorityQueue queue) {
 
         if (currentNode.isLeaf()) {
             for (int i = currentNode.start; i <= currentNode.end; i++) {

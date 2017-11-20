@@ -1,6 +1,8 @@
 package calc;
 
+import data_structures.BinaryTree;
 import data_structures.Boundary;
+import data_structures.CollisionHeap;
 import data_structures.Particle;
 
 public class Collision {
@@ -16,7 +18,8 @@ public class Collision {
      * This works only for 2dim.
      * If no valid collision time is found, a negative value is returned.
      */
-    public double findCollisionTime(Particle particle1, Particle particle2){
+
+    public static double findCollisionTime(Particle particle1, Particle particle2){
 
         //D for Delta
         double[] DV = VectorCalculus.minus(particle1.velocity,particle2.velocity);
@@ -57,7 +60,7 @@ public class Collision {
      *
      */
     //
-    public double findCollisionTime(Particle particle, Boundary boundary){
+    public static double findCollisionTime(Particle particle, Boundary boundary){
 
         //Calculate Delta X
         double[] DX = VectorCalculus.minus(boundary.position,particle.position);
@@ -110,7 +113,7 @@ public class Collision {
      *
      *
      */
-    public void resolveCollision(Particle particle1, Particle particle2, double collisionTime){
+    public static void resolveCollision(Particle particle1, Particle particle2, double collisionTime){
         //
 
         // Calculate position of collision for particle1 and particle2, for this set positions to the collision positions
@@ -167,7 +170,7 @@ public class Collision {
      * yields the outgoing state of the collision.
      *
      */
-    public void resolveCollision(Particle particle, Boundary boundary, double collisionTime){
+    public static void resolveCollision(Particle particle, Boundary boundary, double collisionTime){
 
         //Calculate collsion position
         VectorCalculus.plusSE(particle.position, VectorCalculus.mult(collisionTime, particle.velocity));
@@ -185,12 +188,12 @@ public class Collision {
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(0.5*collisionTime*collisionTime,g));
     }
 
-    public void resolveCollision(Particle particle1, Particle particle2){
+    public static void resolveCollision(Particle particle1, Particle particle2){
         resolveCollision(particle1, particle2, findCollisionTime(particle1, particle2));
     }
 
 
-    public void resolveCollision(Particle particle, Boundary boundary){
+    public static void resolveCollision(Particle particle, Boundary boundary){
         resolveCollision(particle, boundary, findCollisionTime(particle, boundary));
     }
 
