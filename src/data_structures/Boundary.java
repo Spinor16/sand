@@ -17,5 +17,9 @@ public class Boundary {
         this.velocity = velocity;
     }
 
+    public double[] velocity(double time){
+        return this.velocity;
+    }
+
 
 }
