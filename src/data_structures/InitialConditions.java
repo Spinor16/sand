@@ -2,6 +2,7 @@ package data_structures;
 
 import org.omg.CORBA.MARSHAL;
 import org.w3c.dom.css.Rect;
+import utils.IO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +53,7 @@ public class InitialConditions extends JPanel {
     //public Boundary[] leftWall;
     //public Boundary[] rightWall;
 
-    private Boundary[] boundaries;
+    private Boundary[] boundaries = new Boundary[2];
     private Boundary lowerWallL;
     private Boundary lowerWallR;
 
@@ -69,6 +70,7 @@ public class InitialConditions extends JPanel {
         setAngle(angle);
 
         nParticles = (int) (width/(2*particleDistanceInitial+pRadius));
+        IO.print(nParticles);
         particles = new Particle[nParticles];
 
         makeBoundary();
@@ -116,11 +118,11 @@ public class InitialConditions extends JPanel {
         boundaries[1] = lowerWallR;
     }
 
+    /*
+    Set the particles in one line along the whole width. Works in 2D
+     */
     private void makeParticles() {
         for (int i = 0; i < particles.length; i++){
-            /*
-            Set the particles in one line along the whole width. Works in 2D
-             */
             particles[i].position[0] = origin[0]-width/2.+(i+1)*(2*particleDistanceInitial+pRadius);
             particles[i].position[1] = origin[1]+height;
         }
