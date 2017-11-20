@@ -92,15 +92,21 @@ public class CollisionHeap {
         return deletedEvent;
     }
 
-    public void removeEventsContainingIndex(int index) throws HeapException {
+    /**
+     * Removes events containing index from heap and returns them.
+     * @param index CollisionEvents containing index will be removed.
+     * @param events Removed CollisionEvents will be gathered in this array.
+     * @throws HeapException
+     */
+    public void removeEventsContainingIndexSE(int index, CollisionEvent[] events) throws HeapException {
         // Remove column where j=index.
         for (int i = 0; i < index; i++) {
-            remove(indexMap[i][index]);
+            events[i] = remove(indexMap[i][index]);
         }
 
         // Remove row where i=index.
         for (int j = index + 1; j < indexMap.length; j++) {
-            remove(indexMap[index][j]);
+            events[j] = remove(indexMap[index][j]);
         }
     }
 
