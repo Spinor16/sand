@@ -42,8 +42,11 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
      * @param i index of first colliding particle
      * @param j index of second colliding particle
      */
-    public void reset(double t, int i, int j) {
+    public void reset(double t, int i, int j) throws TimeException{
         this.t = t;
+        if (t <= 0) {
+            throw new TimeException();
+        }
         this.i = i;
         this.j = j;
     }
