@@ -51,13 +51,20 @@ public class CollisionHeap {
         }
     }
 
+    /**
+     * Returns pointer to minimal event in heap.
+     * @return min of heap
+     */
+    public CollisionEvent min() {
+        return events.get(1);
+    }
 
     public CollisionEvent removeMin() throws HeapException {
         // FixMe: Could be optimized, because some asumptions can be made for remove(1) that then don't have to be checked in remove().
         return remove(1);
     }
 
-    public CollisionEvent remove(int nodeIndex) throws HeapException {
+    private CollisionEvent remove(int nodeIndex) throws HeapException {
         CollisionEvent deletedEvent, swappedEvent;
         int parentIndex = parentIndex(nodeIndex);
         if (isEmpty()) {
