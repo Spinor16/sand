@@ -25,6 +25,14 @@ public class VectorCalculus {
         }
     }
 
+    public static double[] plus(double[] temp, double[] vector, double[] vector2){
+        for (int i = 0; i < vector.length; i++) {
+            temp[i] = vector[i] + vector2[i];
+
+        }
+        return temp;
+    }
+
     public static double[] plus(double[] vector, double[] vector2){
         double[] ret = new double[vector.length];
         for (int i = 0; i < vector.length; i++) {
@@ -34,11 +42,20 @@ public class VectorCalculus {
         return ret;
     }
 
+
     public static void minusSE(double[] vector, double[] vector2){
         for (int i = 0; i < vector.length; i++) {
             vector[i] -= vector2[i];
 
         }
+    }
+
+    public static double[] minus(double[] temp, double[] vector, double[] vector2){
+        for (int i = 0; i < vector.length; i++) {
+            temp[i] = vector[i] - vector2[i];
+
+        }
+        return temp;
     }
 
 
@@ -77,6 +94,14 @@ public class VectorCalculus {
         }
     }
 
+    public static double[] mult(double[] temp, double b, double[] vector){
+        for (int i = 0; i < vector.length; i++) {
+            temp[i] = vector[i] * b;
+
+        }
+        return temp;
+    }
+
     public static double[] mult(double b, double[] vector){
         double[] ret = new double[vector.length];
         for (int i = 0; i < vector.length; i++) {
@@ -89,6 +114,14 @@ public class VectorCalculus {
         for (int i = 0; i < vector.length; i++) {
             vector[i] /= b;
         }
+    }
+
+    public static double[] divide(double[] temp, double b, double[] vector){
+        for (int i = 0; i < vector.length; i++) {
+            temp[i] = vector[i] / b;
+
+        }
+        return temp;
     }
 
     public static double[] divide(double b, double[] vector){
