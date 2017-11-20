@@ -52,24 +52,32 @@ public class Main extends JPanel{
         CollisionEvent minPB;
 
         while(time<endTime){
-            CollisionHeap ParticleHeap = new CollisionHeap(particles.length);
-            CollisionHeap BoundaryHeap = new CollisionHeap(boundaries.length);
+            CollisionHeap heapPP = new CollisionHeap(particles.length);
+            CollisionHeap heapPB = new CollisionHeap(boundaries.length);
+
+
+            //Look for nearestNeighbours
+            int[][] nearestNeighbours;
+            for (Particle particle  : particles) {
+                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,nNearestNeighbours);
+            }
 
 
             //Add CollisionTimes particle - particle
             for (int i = 0; i < particles.length; i++) {
-
-                //Look for nearestNeighbours
-                int[] nearestNeighbours = tree.getIndiceskNearestNeighbours(particles[i].position,nNearestNeighbours);
-
                 for (int j = 0; j < nNearestNeighbours; j++) {
-                    try {
-                        ParticleHeap.insert(new CollisionEvent(Collision.findCollisionTime(particles[i],
-                                            particles[nearestNeighbours[j]]),i,nearestNeighbours[j]));
-                    } catch (TimeException e) {
-                        continue;
-                    } catch (HeapException e){
-                        e.printStackTrace();
+                    if (i < nearestNeighbours[i][j]) {
+                        try {
+                            heapPP.insert(
+                                    new CollisionEvent(
+                                            Collision.findCollisionTime(particles[i], particles[nearestNeighbours[i][j]]),
+                                            i,
+                                            nearestNeighbours[i][j]
+                                    )
+                            );
+                        } catch (HeapException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -79,73 +87,107 @@ public class Main extends JPanel{
             for (int i = 0; i < particles.length; i++) {
                 for (int j = 0; j < boundaries.length; j++) {
                     try {
-                        BoundaryHeap.insert(new CollisionEvent(Collision.findCollisionTime(particles[i],particles[j]),i,j));
-                    } catch (TimeException e) {
-                        continue;
+                        heapPB.insert(
+                                new CollisionEvent(
+                                        Collision.findCollisionTime(particles[i],particles[j]),
+                                        i,
+                                        j
+                                )
+                        );
                     } catch (HeapException e) {
                         e.printStackTrace();
                     }
                 }
             }
 
+            ArrayList<CollisionEvent> events = new ArrayList<>(); //temporary storing of CollisionEvents
+
             while(DeltaT < timeStep){
-                minPP = ParticleHeap.min();
-                minPB = BoundaryHeap.min();
-                ArrayList<CollisionEvent> events = new ArrayList<>(); //temporary storing of CollisionEvents
+
+                minPP = heapPP.min();
+                minPB = heapPB.min();
 
                 if (minPP.t() < minPB.t()){
                     try {
-                        minPP = ParticleHeap.removeMin();
+                        minPP = heapPP.removeMin();
                         Collision.resolveCollision(particles[minPP.i()],particles[minPP.j()],minPP.t());
 
-                        ParticleHeap.removeEventsContainingIndexSE(minPP.i(),events);
-                        ParticleHeap.removeEventsContainingIndexSE(minPP.j(),events);
+                        //Events involving particle i or j are removed from heap
+                        //and stored in array events for further use after reset
+                        heapPP.removeEventsContainingIndexSE(minPP.i(), events);
+                        heapPP.removeEventsContainingIndexSE(minPP.j(), events);
 
                         //Insert new CollisionEvents for i
-                        for (int j = 0; j < boundaries.length; j++) {
-                            events.get(j).reset(Collision.findCollisionTime(particles[minPP.i()],particles[j]),minPP.i(),j); // take unused CollisionEvent
-                            ParticleHeap.insert(events.get(j));
+                        for (int index : nearestNeighbours[minPP.i()]) {
+                            // take unused CollisionEvent
+                            int min = Math.min(minPP.i(),index);
+                            int max = Math.max(minPP.i(),index);
+                            double collisionTime = Collision.findCollisionTime(particles[min], particles[max]);
+
+                            if (collisionTime > minPP.t()) {
+                                events.get(0).reset(
+                                        collisionTime,
+                                        min,
+                                        max
+                                );
+
+                                heapPP.insert(events.get(0));
+                            }
+
+                            events.remove(0);
                         }
 
                         //Insert new CollisionEvents for j
-                        for (int i = 0; i < boundaries.length; i++) {
-                            events.get(i).reset(Collision.findCollisionTime(particles[minPP.j()],particles[i]),minPP.j(),i); // take unused CollisionEvent
-                            ParticleHeap.insert(events.get(i));
+                        for (int index : nearestNeighbours[minPP.i()]) {
+                            // take unused CollisionEvent
+                            int min = Math.min(minPP.i(),index);
+                            int max = Math.max(minPP.i(),index);
+                            double collisionTime = Collision.findCollisionTime(particles[min], particles[max]);
+
+                            if (collisionTime > minPP.t()) {
+                                events.get(0).reset(
+                                        collisionTime,
+                                        min,
+                                        max
+                                );
+
+                                heapPP.insert(events.get(0));
+                            }
+
+                            events.remove(0);
                         }
 
                     } catch (HeapException e) {
                         e.printStackTrace();
-                    } catch (TimeException e) {
-                        continue;
                     }
 
-                    DeltaT += minPP.t();
+                    DeltaT = minPP.t();
                 }
                 else {
                     try {
-                        minPB = BoundaryHeap.removeMin();
+                        minPB = heapPB.removeMin();
                         Collision.resolveCollision(particles[minPP.i()],boundaries[minPP.j()],minPP.t());
 
-                        BoundaryHeap.removeEventsContainingIndexSE(minPP.i(),events);
-                        BoundaryHeap.removeEventsContainingIndexSE(minPP.j(),events);
+                        heapPB.removeEventsContainingIndexSE(minPP.i(),events);
+                        heapPB.removeEventsContainingIndexSE(minPP.j(),events);
 
                         //Insert new CollisionEvents for i
                         for (int j = 0; j < boundaries.length; j++) {
                             events.get(j).reset(Collision.findCollisionTime(particles[minPP.i()],particles[j]),minPP.i(),j); // take unused CollisionEvent
-                            BoundaryHeap.insert(events.get(j));
+                            heapPB.insert(events.get(j));
                         }
 
                         //Insert new CollisionEvents for j
                         for (int i = 0; i < boundaries.length; i++) {
                             events.get(i).reset(Collision.findCollisionTime(particles[minPP.j()],particles[i]),minPP.j(),i); // take unused CollisionEvent
-                            BoundaryHeap.insert(events.get(i));
+                            heapPB.insert(events.get(i));
                         }
                     } catch (HeapException e) {
                         e.printStackTrace();
                     } catch (TimeException e) {
                         continue;
                     }
-                    DeltaT += minPB.t();
+                    DeltaT = minPB.t();
                 }
             }
 
