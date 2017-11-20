@@ -168,6 +168,12 @@ public class BinaryTree {
         return queue;
     }
 
+    public int[] getIndiceskNearestNeighbours(double[] pos, int k) {
+        IFixedPriorityQueue queue = new FixedPriorityQueue(k);
+        kNearestNeighbours(pos, k, root, queue);
+        return queue.indices();
+    }
+
     public void kNearestNeighbours(double[] pos, int k, Node currentNode, IFixedPriorityQueue queue) {
 
         if (currentNode.isLeaf()) {
