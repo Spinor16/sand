@@ -4,11 +4,17 @@ import calc.Collision;
 import data_structures.*;
 import exceptions.HeapException;
 import exceptions.TimeException;
+import utils.Drawing;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Main extends JPanel{
+
+    static BinaryTree tree;
+    static Particle[] particles;
+    static Boundary[] boundaries;
 
     public static void main(String[] args) {
 
@@ -20,11 +26,13 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        run(0.1,1);
+        main.run(0.1,1);
 
     }
 
-    public static void run(double timeStep, double endTime) {
+
+
+    public void run(double timeStep, double endTime) {
 
         //Settings
         double time = 0;
@@ -33,9 +41,9 @@ public class Main extends JPanel{
         int nNearestNeighbours = 10;
 
         InitialConditions init = new InitialConditions(1,1,1);
-        Particle[] particles = init.getParticles();
-        Boundary[] boundaries = init.getBoundaries();
-        BinaryTree tree = new BinaryTree(particles);
+        particles = init.getParticles();
+        boundaries = init.getBoundaries();
+        tree = new BinaryTree(particles);
 
         //Initializations of temp vars
         double t = 0;
@@ -164,6 +172,45 @@ public class Main extends JPanel{
                 e.printStackTrace();
             }
 
+
+        }
+    }
+
+
+    public void paint(Graphics g) {
+        Rectangle bounds = getBounds();
+
+        if (tree!= null && tree.isBuilt()) {
+            double scale = Drawing.scale(bounds, tree.posMin(), tree.posMax());
+
+            // Clear window and draw background.
+            g.setColor(Color.WHITE);
+            paintComponent(g);
+            g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+
+            //Draw Particles
+            g.setColor(Color.BLACK);
+            for (Particle particle : particles) {
+                particle.paint2D(g,scale,7);
+            }
+
+            //Draw Boundaries
+            g.setColor(Color.PINK);
+            for (Boundary boundary: boundaries){
+                boundary.paint2D(g,bounds.width,bounds.height);
+            }
+
+
+            // Draw tree.
+//            g.setColor(Color.BLACK);
+            //tree.paint(g, scale);
+
+            // Draw circle for ballwalk.
+//            g.setColor(Color.BLACK);
+//            Rectangle ballwalkCoords = Drawing.transform(0.5, 0.5, 0.1, 0.1,
+//                    scale, true);
+//            g.drawOval(ballwalkCoords.x, ballwalkCoords.y, ballwalkCoords.width, ballwalkCoords.height);
 
         }
     }
