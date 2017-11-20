@@ -34,6 +34,16 @@ public class Particle {
 
     public double mass() { return mass; }
 
+    public double position(int i) { return position[i]; }
+
+    public double velocity(int i) { return velocity[i]; }
+
+    //distance_squared between own position and vector2
+    public double dist2(double[] vector2){
+        return dist2(this.position, vector2);
+    }
+
+    //distance between two vectors
     public double dist2(double[] vector1, double[] vector2) {
         double norm2 = 0;
         for (int i = 0; i < vector1.length; i++) {
@@ -41,6 +51,8 @@ public class Particle {
         }
         return norm2;
     }
+
+
 
     /**
     public double[] position() {
