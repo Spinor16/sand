@@ -17,6 +17,7 @@ public class BinaryTree {
 
     public BinaryTree(int dimensions, int nParticles, IGenerator randomGeneratorPosition, IGenerator randomGeneratorVelocity) {
         particles = new Particle[nParticles];
+        //double pPos[] =
         for (int i = 0; i < particles.length; i++) {
             particles[i] = new Particle(dimensions, randomGeneratorPosition, randomGeneratorVelocity);
         }
