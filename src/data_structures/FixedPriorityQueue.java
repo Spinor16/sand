@@ -35,16 +35,16 @@ public class FixedPriorityQueue implements IFixedPriorityQueue {
 
     @Override
     /**
-     * @return the index of the particle with maximal radius square in queue.
+     * @return maximal radius square in queue.
      */
     public double max() {
-        return indices[r2Max];
+        return r2List[r2Max];
     }
 
     /**
      * @return Array of indices corresponding to indices array in BinaryTree.
      */
     public int[] indices() {
-        return indices.clone();
+        return indices;
     }
 }
