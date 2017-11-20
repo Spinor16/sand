@@ -98,15 +98,19 @@ public class CollisionHeap {
      * @param events Removed CollisionEvents will be gathered in this array.
      * @throws HeapException
      */
-    public void removeEventsContainingIndexSE(int index, CollisionEvent[] events) throws HeapException {
+    public void removeEventsContainingIndexSE(int index, ArrayList<CollisionEvent> events) throws HeapException {
         // Remove column where j=index.
         for (int i = 0; i < index; i++) {
-            events[i] = remove(indexMap[i][index]);
+            if (indexMap[i][index] != 0) {
+                events.add(remove(indexMap[i][index]));
+            }
         }
 
         // Remove row where i=index.
         for (int j = index + 1; j < indexMap.length; j++) {
-            events[j] = remove(indexMap[index][j]);
+            if (indexMap[index][j] != 0) {
+                events.add(remove(indexMap[index][j]));
+            }
         }
     }
 
