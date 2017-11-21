@@ -8,7 +8,7 @@ import data_structures.Particle;
 public class Collision {
     private static double[] g = {0, 9.81};
     private static double DE = 0.7;
-    private static double[] temp;
+    private static double[] temp = new double[]{0,0};
 
     /**
      *
@@ -25,6 +25,12 @@ public class Collision {
 
         //D for Delta
         double[] DV = VectorCalculus.minus(particle1.velocity,particle2.velocity);
+
+        //if DV is 0 there is no collision
+        if (VectorCalculus.norm(DV) == 0){
+            return -1;
+        }
+
         double[] DX = VectorCalculus.minus(particle1.position,particle2.position);
 
         //Elements squared
@@ -41,6 +47,7 @@ public class Collision {
         if (determinant < 0){
             return -1;
         }
+
 
         double collisionTime = (Math.sqrt(determinant) - VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
         return collisionTime;
@@ -75,7 +82,7 @@ public class Collision {
         //Calculate normal velocity component
         double DVn = VectorCalculus.dot(VectorCalculus.minus(boundary.velocity, particle.velocity),boundary.t);
 
-        if (DVn < 0){
+        if (DVn <= 0){
             return -1;
         }
 
