@@ -35,22 +35,21 @@ public class Main extends JPanel{
     public void run(double timeStep, double endTime) {
 
         //Settings
-        double time = 0;
 //        int nParticles = 50;
 //        int nBoundaries = 2;
         int nNearestNeighbours = 10;
 
-        InitialConditions init = new InitialConditions(20,20,1);
+        InitialConditions init = new InitialConditions(1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
 
         //Initializations of temp vars
-        double t = 0;
+        double time = 0;
         double DeltaT = 0;
         CollisionEvent minPP;
         CollisionEvent minPB;
-
+        double collisionTime;
         while(time<endTime){
             CollisionHeap heapPP = new CollisionHeap(particles.length);
             CollisionHeap heapPB = new CollisionHeap(boundaries.length);
@@ -67,35 +66,42 @@ public class Main extends JPanel{
             for (int i = 0; i < particles.length; i++) {
                 for (int j = 0; j < nNearestNeighbours; j++) {
                     if (i < nearestNeighbours[i][j]) {
+                        collisionTime = Collision.findCollisionTime(particles[i], particles[nearestNeighbours[i][j]]);
+                        if (collisionTime > 0) {
+                            try {
+                                heapPP.insert(
+                                        new CollisionEvent(
+                                                collisionTime,
+                                                i,
+                                                nearestNeighbours[i][j]
+                                        )
+                                );
+                            } catch (HeapException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            //Add CollisionTimes particle - boundaries
+            for (int i = 0; i < particles.length; i++) {
+                for (int j = 0; j < boundaries.length; j++) {
+                    collisionTime = Collision.findCollisionTime(particles[i], boundaries[j]);
+                    if (collisionTime > 0) {
                         try {
-                            heapPP.insert(
+                            heapPB.insert(
                                     new CollisionEvent(
-                                            Collision.findCollisionTime(particles[i], particles[nearestNeighbours[i][j]]),
+                                            collisionTime,
                                             i,
-                                            nearestNeighbours[i][j]
+                                            j
                                     )
                             );
                         } catch (HeapException e) {
                             e.printStackTrace();
                         }
-                    }
-                }
-
-            }
-
-            //Add CollisionTimes particle - boundaries
-            for (int i = 0; i < particles.length; i++) {
-                for (int j = 0; j < boundaries.length; j++) {
-                    try {
-                        heapPB.insert(
-                                new CollisionEvent(
-                                        Collision.findCollisionTime(particles[i],boundaries[j]),
-                                        i,
-                                        j
-                                )
-                        );
-                    } catch (HeapException e) {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -174,8 +180,8 @@ public class Main extends JPanel{
                 e.printStackTrace();
             }
 
-
         }
+        time += timeStep;
     }
 
     private void resetInsertCollisionEvents(int resetIndex, CollisionEvent minEvent, CollisionHeap heapPP,
