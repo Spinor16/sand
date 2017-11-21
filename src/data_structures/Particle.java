@@ -14,12 +14,11 @@ public class Particle implements CollisionPartner{
     public int index;
     private double speedFactor;
 
-
     public Particle(double[] position, double[] velocity) {
         //mass
         this.mass = 1;
 
-        this.radius = 1;
+        this.radius = 0.01;
 
         //position
         this.position = position;
@@ -28,7 +27,6 @@ public class Particle implements CollisionPartner{
         this.velocity = velocity;
 
     }
-
 
     int dimensions() { return position.length; }
 

@@ -1,5 +1,6 @@
 package data_structures;
 
+import calc.VectorCalculus;
 import org.omg.CORBA.MARSHAL;
 import org.w3c.dom.css.Rect;
 import utils.IO;
@@ -39,7 +40,7 @@ public class InitialConditions extends JPanel {
      */
 
     //constants
-    public final double pRadius = 1.;
+    public final double pRadius = 0.01;
     public final double[] origin = {0,0};
     public double width;
     public double height;
@@ -69,7 +70,7 @@ public class InitialConditions extends JPanel {
         setHeight(height);
         setAngle(angle);
 
-        nParticles = (int) (width/(2*particleDistanceInitial+pRadius));
+        nParticles = (int) (width/(2*particleDistanceInitial+2*pRadius));
         IO.print(nParticles);
         particles = new Particle[nParticles];
         for (int i = 0; i < particles.length; i++) {
@@ -80,16 +81,14 @@ public class InitialConditions extends JPanel {
     }
 
     public void setWidth(double width){
-        width = width;
+        this.width = width;
     }
 
     public void setHeight(double height){
-        height = height;
+        this.height = height;
     }
 
-    public void setAngle(double angle){
-        angle = angle;
-    }
+    public void setAngle(double angle){ this.angle = angle; }
 
     public Boundary[] getBoundaries() {
         return boundaries;
@@ -107,13 +106,14 @@ public class InitialConditions extends JPanel {
 //        rightWall = new Boundary[dimensions];
 
         double[] lWallVelocity = {0,0};
-        double[] lWallPosition = origin;
-        double[] lWallDirection = {Math.sin(angle/2), Math.cos(angle/2)};
+        double[] lWallPosition = {width/2,height};
+        angle = (Math.PI-angle)/2;
+        double[] lWallDirection = {Math.cos(angle), Math.sin(angle)};
         lowerWallL = new Boundary(lWallVelocity, lWallPosition, lWallDirection);
 
         double[] rWallVelocity = {0,0};
-        double[] rWallPosition = origin;
-        double[] rWallDirection = {-Math.sin(angle/2), Math.cos(angle/2)};
+        double[] rWallPosition = lWallPosition;
+        double[] rWallDirection = {-Math.cos(angle), Math.sin(angle)};
         lowerWallR = new Boundary(rWallVelocity, rWallPosition, rWallDirection);
 
         boundaries[0] = lowerWallL;
