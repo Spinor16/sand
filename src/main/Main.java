@@ -40,7 +40,7 @@ public class Main extends JPanel{
 //        int nBoundaries = 2;
         int nNearestNeighbours = 10;
 
-        InitialConditions init = new InitialConditions(1,1,1);
+        InitialConditions init = new InitialConditions(20,20,1);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -204,7 +204,6 @@ public class Main extends JPanel{
 
                 heapPP.insert(events.get(0));
             }
-
             events.remove(0);
         }
     }
