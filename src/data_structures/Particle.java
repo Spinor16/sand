@@ -5,7 +5,7 @@ import utils.Drawing;
 
 import java.awt.*;
 
-public class Particle {
+public class Particle implements CollisionPartner{
     public double[] position;
     public double[] velocity;
 

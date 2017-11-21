@@ -89,7 +89,7 @@ public class Main extends JPanel{
                     try {
                         heapPB.insert(
                                 new CollisionEvent(
-                                        Collision.findCollisionTime(particles[i],particles[j]),
+                                        Collision.findCollisionTime(particles[i],boundaries[j]),
                                         i,
                                         j
                                 )
@@ -118,44 +118,10 @@ public class Main extends JPanel{
                         heapPP.removeEventsContainingIndexSE(minPP.j(), events);
 
                         //Insert new CollisionEvents for i
-                        for (int index : nearestNeighbours[minPP.i()]) {
-                            // take unused CollisionEvent
-                            int min = Math.min(minPP.i(),index);
-                            int max = Math.max(minPP.i(),index);
-                            double collisionTime = Collision.findCollisionTime(particles[min], particles[max]);
-
-                            if (collisionTime > minPP.t()) {
-                                events.get(0).reset(
-                                        collisionTime,
-                                        min,
-                                        max
-                                );
-
-                                heapPP.insert(events.get(0));
-                            }
-
-                            events.remove(0);
-                        }
+                        resetInsertCollisionEvents(minPP.i(), minPP, heapPP, nearestNeighbours[minPP.i()], events, particles);
 
                         //Insert new CollisionEvents for j
-                        for (int index : nearestNeighbours[minPP.i()]) {
-                            // take unused CollisionEvent
-                            int min = Math.min(minPP.i(),index);
-                            int max = Math.max(minPP.i(),index);
-                            double collisionTime = Collision.findCollisionTime(particles[min], particles[max]);
-
-                            if (collisionTime > minPP.t()) {
-                                events.get(0).reset(
-                                        collisionTime,
-                                        min,
-                                        max
-                                );
-
-                                heapPP.insert(events.get(0));
-                            }
-
-                            events.remove(0);
-                        }
+                        resetInsertCollisionEvents(minPP.j(), minPP, heapPP, nearestNeighbours[minPP.i()], events, particles);
 
                     } catch (HeapException e) {
                         e.printStackTrace();
@@ -166,27 +132,21 @@ public class Main extends JPanel{
                 else {
                     try {
                         minPB = heapPB.removeMin();
-                        Collision.resolveCollision(particles[minPP.i()],boundaries[minPP.j()],minPP.t());
+                        Collision.resolveCollision(particles[minPB.i()], boundaries[minPB.j()], minPB.t());
 
-                        heapPB.removeEventsContainingIndexSE(minPP.i(),events);
-                        heapPB.removeEventsContainingIndexSE(minPP.j(),events);
+                        //Events involving particle i are removed from heap
+                        //and stored in array events for further use after reset
+                        //Events involving boundary aren't updated as boundary
+                        //isn't affected from the collision
+                        heapPB.removeEventsContainingIndexSE(minPB.i(),events);
 
                         //Insert new CollisionEvents for i
-                        for (int j = 0; j < boundaries.length; j++) {
-                            events.get(j).reset(Collision.findCollisionTime(particles[minPP.i()],particles[j]),minPP.i(),j); // take unused CollisionEvent
-                            heapPB.insert(events.get(j));
-                        }
+                        resetInsertCollisionEvents(minPP.i(), minPP, heapPP, nearestNeighbours[minPP.i()], events, boundaries);
 
-                        //Insert new CollisionEvents for j
-                        for (int i = 0; i < boundaries.length; i++) {
-                            events.get(i).reset(Collision.findCollisionTime(particles[minPP.j()],particles[i]),minPP.j(),i); // take unused CollisionEvent
-                            heapPB.insert(events.get(i));
-                        }
                     } catch (HeapException e) {
                         e.printStackTrace();
-                    } catch (TimeException e) {
-                        continue;
                     }
+
                     DeltaT = minPB.t();
                 }
             }
@@ -215,6 +175,37 @@ public class Main extends JPanel{
             }
 
 
+        }
+    }
+
+    private void resetInsertCollisionEvents(int resetIndex, CollisionEvent minEvent, CollisionHeap heapPP,
+                                            int[] nearestNeighbour, ArrayList<CollisionEvent> events,
+                                            CollisionPartner[] collisionPartners)
+                                            throws HeapException {
+        for (int index : nearestNeighbour) {
+            // take unused CollisionEvent
+            int min = Math.min(resetIndex,index);
+            int max = Math.max(resetIndex,index);
+            double collisionTime = 0;
+
+            if (collisionPartners instanceof Particle[]){
+                collisionTime = Collision.findCollisionTime(particles[min], (Particle) collisionPartners[max]);
+            }
+            else if (collisionPartners instanceof Boundary[]){
+                collisionTime = Collision.findCollisionTime(particles[min], (Boundary) collisionPartners[max]);
+            }
+
+            if (collisionTime > minEvent.t()) {
+                events.get(0).reset(
+                        collisionTime,
+                        min,
+                        max
+                );
+
+                heapPP.insert(events.get(0));
+            }
+
+            events.remove(0);
         }
     }
 

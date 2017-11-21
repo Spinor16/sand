@@ -4,7 +4,7 @@ import calc.VectorCalculus;
 
 import java.awt.*;
 
-public class Boundary {
+public class Boundary implements CollisionPartner{
     public double[] position;
     public double[] n; //direction
     public double[] t; //orthogonal to direction
