@@ -57,7 +57,7 @@ public class Main extends JPanel{
 
 
             //Look for nearestNeighbours
-            int[][] nearestNeighbours;
+            int[][] nearestNeighbours = new int[particles.length][nNearestNeighbours];
             for (Particle particle  : particles) {
                 nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,nNearestNeighbours);
             }
