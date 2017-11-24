@@ -63,7 +63,7 @@ public class CollisionHeap {
         return remove(1);
     }
 
-    private CollisionEvent remove(int nodeIndex) throws HeapException {
+    public CollisionEvent remove(int nodeIndex) throws HeapException {
         CollisionEvent deletedEvent, swappedEvent;
         int parentIndex = parentIndex(nodeIndex);
         if (isEmpty()) {
@@ -88,7 +88,7 @@ public class CollisionHeap {
             heapSize--;
 
             indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
-            indexMap[swappedEvent.i()][swappedEvent.j()] = (heapSize == nodeIndex) ? nodeIndex : 0;
+            indexMap[swappedEvent.i()][swappedEvent.j()] = nodeIndex;
 
             if (heapSize > 0) {
 

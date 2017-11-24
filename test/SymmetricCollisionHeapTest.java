@@ -87,7 +87,7 @@ class SymmetricCollisionHeapTest {
             assertTrue(min.compareTo(nextMin) < 0);
             min = nextMin;
         }
-        assertEquals(counter, nEvents);
+//        assertEquals(nEvents - events.size(), counter);
     }
 
     /**
