@@ -75,6 +75,7 @@ public class CollisionHeap {
         else if (heapSize == 1){
             deletedEvent = events.get(nodeIndex);
             indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
+            events.remove(heapSize);
             heapSize--;
         }
         else {

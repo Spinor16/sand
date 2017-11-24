@@ -39,7 +39,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
      */
     public void reset(double t, int i, int j){
         assert t > 0;
-        assert i < j;
+        //assert i < j;
 
         this.t = t;
         this.i = i;

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,14 +63,15 @@ class SymmetricCollisionHeapTest {
      * Test that nodes can be deleted at random indices.
      * @throws HeapException
      */
-    /*@Test
+    @Test
     void remove() throws HeapException {
         // Remove some random nodes from heap.
         int counter = 0;
+        ArrayList<CollisionEvent> events = new ArrayList<>();
         for (int _ = 0; _ < nEvents / 2; _++) {
             int i = ((int) (random.nextDouble() * (nParticles)));
             try {
-                heap.remove(i);
+                heap.removeEventsContainingIndexSE(i,events);
                 counter++;
             }
             catch (HeapException e) {
@@ -86,7 +88,7 @@ class SymmetricCollisionHeapTest {
             min = nextMin;
         }
         assertEquals(counter, nEvents);
-    }*/
+    }
 
     /**
      * Test that heap throws exception when trying to insert event into full heap.

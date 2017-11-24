@@ -26,7 +26,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.000001,20);
+        main.run(0.01,20);
 
     }
 
@@ -37,11 +37,11 @@ public class Main extends JPanel{
         //Settings
 //        int nParticles = 50;
 //        int nBoundaries = 2;
-        int nNearestNeighbours = 3;
+        int nNearestNeighbours = 2;
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(3,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(2,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -104,7 +104,7 @@ public class Main extends JPanel{
                             heapPB.insert(
                                     new CollisionEvent(
                                             collisionTime,
-                                            particle.index,
+                                            particle.index, // assertion fails
                                             j
                                     )
                             );
@@ -214,7 +214,7 @@ public class Main extends JPanel{
             tree.buildTree(tree.root);
             time += DeltaT;
             DeltaT = 0;
-            paint = time - movieTime > movieTimeStep ? true : false;
+            paint = time - movieTime > movieTimeStep;
             if (paint) {
                 repaint();
                 movieTime = time;
@@ -233,15 +233,15 @@ public class Main extends JPanel{
         }
     }
 
-    private void updatePP(int resetIndex, CollisionEvent minEvent, SymmetricCollisionHeap heap,
+    private void updatePP(int pUpdateIndex, CollisionEvent minEvent, SymmetricCollisionHeap heap,
                           int[] nearestNeighbours, ArrayList<CollisionEvent> events)
                                             throws HeapException {
 
         for (int index : nearestNeighbours) {
             double collisionTime = 0;
 
-            int min = Math.min(resetIndex,index);
-            int max = Math.max(resetIndex,index);
+            int min = Math.min(pUpdateIndex,index);
+            int max = Math.max(pUpdateIndex,index);
 
             //exclude possibility of having same collision twice
             if (min == minEvent.i() && max == minEvent.j()){
@@ -258,22 +258,22 @@ public class Main extends JPanel{
         }
     }
 
-    private void updatePB(int particleIndex, CollisionEvent minEvent, CollisionHeap heap,
+    private void updatePB(int pUpdateIndex, CollisionEvent minEvent, CollisionHeap heap,
                           ArrayList<CollisionEvent> events) throws HeapException {
 
         for (int boundaryIndex = 0; boundaryIndex < boundaries.length; boundaryIndex++) {
             double collisionTime = 0;
 
             //exclude possibility of having same collision twice
-            if (particleIndex == minEvent.i() && boundaryIndex == minEvent.j()){
+            if (pUpdateIndex == minEvent.i() && boundaryIndex == minEvent.j()){
                 return;
             }
-            collisionTime = Collision.findCollisionTime(particles[particleIndex], boundaries[boundaryIndex]);
+            collisionTime = Collision.findCollisionTime(particles[pUpdateIndex], boundaries[boundaryIndex]);
 
             //check if the collision happens after minTime, i.e. if *real* collision
             //implicitly check whether time is positive
             if (collisionTime > minEvent.t()) {
-                resetAndInsert(particleIndex, boundaryIndex, heap, events, collisionTime);
+                resetAndInsert(pUpdateIndex, boundaryIndex, heap, events, collisionTime);
             }
         }
     }
