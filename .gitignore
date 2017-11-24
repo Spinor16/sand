@@ -73,3 +73,5 @@ fabric.properties
 
 # other
 .directory
+
+src/data_structures/\.DS_Store

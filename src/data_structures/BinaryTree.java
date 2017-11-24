@@ -112,17 +112,6 @@ public class BinaryTree {
             currentNode.rChild = new Node(rPosMin, rPosMax, rStart, rEnd, currentNode, this);
             buildTree(nextDimension, currentNode.rChild);
         }
-
-        // Going up again. Fill gravity stuff
-        if(currentNode.hasLeft() && currentNode.hasRight()){
-            //do something when going up
-        }
-        else if(currentNode.hasRight()){
-            //do smth when rightChild
-        }
-        else{
-            //do smth when leftChild
-        }
     }
 
     public int dimensions() {

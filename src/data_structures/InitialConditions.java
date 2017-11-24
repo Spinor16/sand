@@ -16,7 +16,7 @@ public class InitialConditions extends JPanel {
     - how does the box around particles look like? shape, dimensions, ect.
     assumptions (for now):
     - particle_radius = 1 for all particles
-    - walls don't move
+    - walls don'normal move
     - situation looks like this:
 
           w
@@ -61,7 +61,7 @@ public class InitialConditions extends JPanel {
     //particle array
     private Particle[] particles;
 
-    public InitialConditions(double width, double height, double angle) {
+    public InitialConditions(int nParticles, double width, double height, double angle) {
         /*
         width and height of box, should be larger than double the radius of the particle (r=1).
         Angle between 0 and pi
@@ -69,8 +69,9 @@ public class InitialConditions extends JPanel {
         setWidth(width);
         setHeight(height);
         setAngle(angle);
+        this.nParticles = nParticles;
 
-        nParticles = (int) (width/(2*particleDistanceInitial+2*pRadius));
+//        nParticles = (int) (width/(2*particleDistanceInitial+2*pRadius));
         IO.print(nParticles);
         particles = new Particle[nParticles];
         for (int i = 0; i < particles.length; i++) {
@@ -106,7 +107,7 @@ public class InitialConditions extends JPanel {
 //        rightWall = new Boundary[dimensions];
 
         double[] lWallVelocity = {0,0};
-        double[] lWallPosition = {width/2,height};
+        double[] lWallPosition = {width/2,0};
         angle = (Math.PI-angle)/2;
         double[] lWallDirection = {Math.cos(angle), Math.sin(angle)};
         lowerWallL = new Boundary(lWallVelocity, lWallPosition, lWallDirection);
@@ -125,8 +126,12 @@ public class InitialConditions extends JPanel {
      */
     private void makeParticles() {
         for (int i = 0; i < particles.length; i++){
-            particles[i].position[0] = origin[0]-width/2.+(i+1)*(2*particleDistanceInitial+pRadius);
+            particles[i].position[0] = origin[0]+(i+1)*(2*particleDistanceInitial+pRadius);
             particles[i].position[1] = origin[1]+height;
+
+            particles[i].velocity[1] = 0;
         }
+//        particles[0].velocity[0] = -1;
+//        particles[1].velocity[0] = 1;
     }
 }

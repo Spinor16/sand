@@ -59,6 +59,7 @@ public class Particle implements CollisionPartner{
                 scale,
                 true
         );
-        g.fillRect(scaledValues.x, scaledValues.y, scaledValues.width, scaledValues.height);
+        g.fillOval((int)(scaledValues.x - radius*scale), (int)(scaledValues.y -radius*scale), (int)(2*radius*scale),
+                (int)(2*radius*scale));
     }
 }

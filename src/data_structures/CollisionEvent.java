@@ -5,7 +5,7 @@ import exceptions.TimeException;
 /**
  * Contain information about one collision event.
  *
- * t = time at which event happens.
+ * normal = time at which event happens.
  * i = index of first particle involved.
  * j = index of second particle involved.
  *
@@ -18,7 +18,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
     /**
      * Constructor
      * @pre i<j
-     * @param t time at which the collision occurs
+     * @param normal time at which the collision occurs
      * @param i index of first colliding particle
      * @param j index of second colliding particle
      */
@@ -33,7 +33,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
     /**
      * Reset attributes.
      * @pre i<j
-     * @param t time at which the collision occurs
+     * @param normal time at which the collision occurs
      * @param i index of first colliding particle
      * @param j index of second colliding particle
      */

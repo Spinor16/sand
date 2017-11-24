@@ -20,7 +20,7 @@ public class VectorCalculus {
 
     public static void plusSE(double[] vector, double[] vector2){
         for (int i = 0; i < vector.length; i++) {
-            vector[i] -= vector2[i];
+            vector[i] += vector2[i];
 
         }
     }

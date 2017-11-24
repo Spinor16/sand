@@ -1,5 +1,5 @@
 import data_structures.CollisionEvent;
-import data_structures.CollisionHeap;
+import data_structures.SymmetricCollisionHeap;
 import exceptions.HeapException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +9,9 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CollisionHeapTest {
+class SymmetricCollisionHeapTest {
 
-    CollisionHeap heap;
+    SymmetricCollisionHeap heap;
     int nParticles = 1000;
     int nEvents = (int)(0.1*(nParticles*nParticles));
     Random random = new Random();
@@ -22,7 +22,7 @@ class CollisionHeapTest {
      */
     @BeforeEach
     void setUp() throws HeapException {
-        heap = new CollisionHeap(nParticles);
+        heap = new SymmetricCollisionHeap(nParticles);
         // Fill heap with random events.
         for (int _ = 0; _ < nEvents; _++) {
             int i = ((int) (random.nextDouble() * (nParticles))); // Get random integer between 0 and nParticles-1.
@@ -94,14 +94,14 @@ class CollisionHeapTest {
      */
     @Test
     void insert() throws HeapException{
-        CollisionHeap heap = new CollisionHeap(1);
+        SymmetricCollisionHeap heap = new SymmetricCollisionHeap(1);
         heap.insert(new CollisionEvent(1,0,0));
         assertThrows(HeapException.class, () -> heap.insert(new CollisionEvent(2, 0, 0)));
     }
 
     @Test
     void isEmpty() {
-        CollisionHeap heap = new CollisionHeap(1);
+        SymmetricCollisionHeap heap = new SymmetricCollisionHeap(1);
         assertTrue(heap.isEmpty());
     }
 
