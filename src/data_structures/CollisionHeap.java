@@ -72,7 +72,7 @@ public class CollisionHeap {
         else if (nodeIndex > heapSize || nodeIndex <= 0) {
             throw new HeapException("Node with index " + nodeIndex + " does not exist");
         }
-        else if (heapSize == 1){
+        else if (heapSize == nodeIndex){
             deletedEvent = events.get(nodeIndex);
             indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
             events.remove(heapSize);
@@ -83,8 +83,6 @@ public class CollisionHeap {
             swappedEvent = events.get(heapSize);
             events.set(nodeIndex, swappedEvent);
             events.remove(heapSize);
-
-            nodeIndex = (heapSize == nodeIndex) ? nodeIndex - 1: nodeIndex;
             heapSize--;
 
             indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
