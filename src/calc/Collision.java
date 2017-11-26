@@ -4,9 +4,11 @@ import data_structures.Boundary;
 import data_structures.Particle;
 
 public class Collision {
-    private static double[] g = {0, -1};
-    private static double DE = 0.7;
+    private static double[] g = {0, -9.81};
+    private static double COR = 0.7;
     private static double[] temp = new double[]{0,0};
+    private static double[] temp2 = new double[]{0,0};
+    private static double[] temp3 = new double[]{0,0};
 
     /**
      *
@@ -22,14 +24,17 @@ public class Collision {
     public static double findCollisionTime(Particle particle1, Particle particle2){
 
         //D for Delta
-        double[] DV = VectorCalculus.minus(particle1.velocity,particle2.velocity);
+        double[] DV = temp2;
+        double[] DX = temp3;
+
+        VectorCalculus.minus(DV,particle1.velocity,particle2.velocity);
 
         //if DV is 0 there is no collision
-        if (VectorCalculus.norm(DV) == 0){
+        if (VectorCalculus.norm2(DV) == 0){
             return -1;
         }
 
-        double[] DX = VectorCalculus.minus(particle1.position,particle2.position);
+        VectorCalculus.minus(DX,particle1.position,particle2.position);
 
         //distance squared between particle centers when colliding
         double dist2 = Math.pow(particle1.radius + particle2.radius,2);
@@ -44,6 +49,7 @@ public class Collision {
 
 
         double collisionTime = - (Math.sqrt(determinant) + VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
+
         return collisionTime;
 
     }
@@ -54,10 +60,7 @@ public class Collision {
      * @param boundary
      * @return collisionTime
      *
-     * Calculates the Collision time of a linear boundary and a particle. This works for a non-moving boundary only, since
-     * the positional time invariance of the boundary needs to be satisfied when calculating the time back from the
-     * intersection of boundary.direction and particle.velocity.
-     *
+     * Calculates the Collision time of a linear boundary and a particle.
      * This works only for 2dim.
      * If no valid collision time is found, the method returns a negative value.
      *
@@ -65,9 +68,13 @@ public class Collision {
     //
     public static double findCollisionTime(Particle particle, Boundary boundary){
 
-        //Calculate Delta X
-        double[] DX = VectorCalculus.minus(boundary.position,particle.position);
-        double[] DV = VectorCalculus.minus(particle.velocity, boundary.velocity);
+        //D for Delta
+        double[] DV = temp2;
+        double[] DX = temp3;
+
+        //Calculate Delta X and Delta V
+        VectorCalculus.minus(DX,boundary.position,particle.position);
+        VectorCalculus.minus(DV,particle.velocity, boundary.velocity);
 
         //Set boundary.normal in same direction as DXn
         int sign = (int) Math.signum(VectorCalculus.dot(DX,boundary.normal));
@@ -85,7 +92,7 @@ public class Collision {
         //calculate distance between particle and boundary
         double dist = DXn - particle.radius;
 
-        double determinant = Math.pow(DVn / gn, 2) + 2 * dist / gn;
+        double determinant = Math.pow(DVn / gn, 2) + 2  * dist / gn;
 
         if (determinant < 0){
             return -1;
@@ -107,19 +114,21 @@ public class Collision {
      * @param particle2
      * @param collisionTime
      *
-     * Particle1 and particle2 are updated to the outgoing velocities. Their position is projected backwards in time,
-     * such that after projecting forwards
-     *            particle.position + collisionTime * particle.velocity + 0.5 * collisionTime^2 * g
+     * Particle1 and particle2 are updated to the outgoing velocities. Their position and velocity are projected
+     * backwards in time, such that after projecting forwards
+     *            particle.position += collisionTime * particle.velocity + 0.5 * collisionTime^2 * g
+     *            particle.velocity += collisionTime * g
      * yields the outgoing state of
      * the collision and particle.velocity .
      *
      *
      */
     public static void resolveCollision(Particle particle1, Particle particle2, double collisionTime){
-        //
+
+        double[] n = temp2;
+        double[] DV = temp3;
 
         // Calculate position of collision for particle1 and particle2, for this set positions to the collision positions
-        //drift
         VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,collisionTime, particle1.velocity));
         VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
 
@@ -131,27 +140,27 @@ public class Collision {
         VectorCalculus.plusSE(particle2.velocity, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
 
         //Calculate direction, unit vector connecting ball centers
-        double[] n = VectorCalculus.minus(particle1.position,particle2.position);
+        VectorCalculus.minus(n,particle1.position,particle2.position);
         VectorCalculus.divideSE(VectorCalculus.norm(n),n);
 
         //Calculate Energy
-        double energy = particle1.mass * VectorCalculus.norm2(particle1.velocity)
-                        + particle2.mass * VectorCalculus.norm2(particle2.velocity);
+        double energy = 0.5 * (particle1.mass * VectorCalculus.norm2(particle1.velocity)
+                        + particle2.mass * VectorCalculus.norm2(particle2.velocity));
 
         //Calculate DV
-        double[] DV = VectorCalculus.minus(particle1.velocity,particle2.velocity);
+        VectorCalculus.minus(DV,particle1.velocity,particle2.velocity);
+
+        //For convenience calculate in advance
         double mass_term = (1/particle1.mass + 1/particle2.mass);
-        double dot = VectorCalculus.dot(n,DV) / mass_term;
+        double dot = VectorCalculus.dot(n,DV) / 2. / mass_term;
+        double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
 
-        //Calculate new velocities
-        VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp,dot / particle1.mass, n));
-        VectorCalculus.plusSE(particle1.velocity,
-                            VectorCalculus.mult(temp,Math.sqrt(dot*dot + DE * energy / mass_term) / particle1.mass, n));
 
-        VectorCalculus.minusSE(particle2.velocity, VectorCalculus.mult(temp,dot / particle2.mass, n));
-        VectorCalculus.minusSE(particle2.velocity,
-                            VectorCalculus.mult(temp,Math.sqrt(dot*dot + DE * energy / mass_term) / particle2.mass, n));
+        //Calculate new velocity particle 1
+        VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp, collisionMomentum / particle1.mass, n));
 
+        //Calculate new velocity particle 2
+        VectorCalculus.minusSE(particle2.velocity, VectorCalculus.mult(temp,collisionMomentum / particle2.mass, n));
 
         //Project back positions
         VectorCalculus.minusSE(particle1.position,VectorCalculus.mult(temp,collisionTime,particle1.velocity));
@@ -162,7 +171,7 @@ public class Collision {
 
         //Project back velocities
         VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
-        VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
+        VectorCalculus.minusSE(particle2.velocity,VectorCalculus.mult(temp,collisionTime,g));
 
     }
 
@@ -172,13 +181,16 @@ public class Collision {
      * @param boundary
      * @param collisionTime
      *
-     * Particle1 is updated to the outgoing velocity. The position is projected backwards in time,
-     * such that after the call
-     *      particle.position + collisionTime * particle.velocity + 0.5 * collisionTime^2 * g
+     * Particle1 is updated to the outgoing velocity. Its position and velocity are projected
+     * backwards in time, such that after projecting forwards
+     *            particle.position += collisionTime * particle.velocity + 0.5 * collisionTime^2 * g
+     *            particle.velocity += collisionTime * g
      * yields the outgoing state of the collision.
      *
      */
     public static void resolveCollision(Particle particle, Boundary boundary, double collisionTime){
+
+        double[] Vt = temp2;
 
         //Calculate collision position
         VectorCalculus.plusSE(particle.position, VectorCalculus.mult(temp,collisionTime, particle.velocity));
@@ -188,7 +200,7 @@ public class Collision {
         VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
 
         //Calculate tangential component
-        double[] Vt = VectorCalculus.mult(VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);
+        VectorCalculus.mult(Vt,VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);
 
         double vi2 = VectorCalculus.norm2(particle.velocity);
 
@@ -197,7 +209,7 @@ public class Collision {
 
         //Consider energy loss
         particle.velocity = VectorCalculus.divide(VectorCalculus.norm(particle.velocity),particle.velocity);
-        VectorCalculus.multSE(Math.sqrt((1-DE)*vi2), particle.velocity);
+        VectorCalculus.multSE(Math.sqrt((1- COR)*vi2), particle.velocity);
 
         //Project back position
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,collisionTime,particle.velocity));
