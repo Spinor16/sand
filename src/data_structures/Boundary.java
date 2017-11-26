@@ -33,7 +33,7 @@ public class Boundary implements CollisionPartner{
 //        IO.print(x2);
 //        IO.print(y1);
 //        IO.print(y2);
-        g.drawLine(x1,y1,x2,y2);
+        g.drawLine(x1,height-y1,x2,height-y2);
     }
 
 

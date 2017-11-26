@@ -2,6 +2,9 @@ package data_structures;
 
 import calc.VectorCalculus;
 import utils.Drawing;
+import utils.IO;
+
+import java.awt.Color;
 
 import java.awt.*;
 
@@ -50,16 +53,16 @@ public class Particle implements CollisionPartner{
         return norm2;
     }
 
-    public void paint2D(Graphics g, double scale, int size) {
-        Rectangle scaledValues = Drawing.transform2D(
-                position[0],
-                position[1],
-                size/scale,
-                size/scale,
-                scale,
-                true
-        );
-        g.fillOval((int)(scaledValues.x - radius*scale), (int)(scaledValues.y -radius*scale), (int)(2*radius*scale),
-                (int)(2*radius*scale));
+    public void paint2D(Graphics g, double scale, int size, int height, int nParticles) {
+        Rectangle scaledValues = Drawing.transform2D(position[0], position[1], size/scale, size/scale, scale,true);
+        int x1 = (int)(scaledValues.x - radius*scale);
+        int y1 = (int)(scaledValues.y -radius*scale);
+        int R =  (int)(2*radius*scale);
+
+        //color coupled to index, probably not optimal
+        Color myColor = new Color((int)((double)index/nParticles*155), (int)((double)index/nParticles*205),(int)((double)index/nParticles*255));
+        g.setColor(myColor);
+
+        g.fillOval(x1, height-y1, R, R);
     }
 }

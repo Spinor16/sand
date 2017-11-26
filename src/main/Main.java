@@ -41,7 +41,7 @@ public class Main extends JPanel{
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(5,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(15,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -316,9 +316,9 @@ public class Main extends JPanel{
 
 
             //Draw Particles
-            g.setColor(Color.BLACK);
+            //g.setColor(Color.BLACK);
             for (Particle particle : particles) {
-                particle.paint2D(g,scale,7);
+                particle.paint2D(g,scale,7, bounds.height, particles.length);
             }
 
             //Draw Boundaries
