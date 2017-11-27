@@ -1,6 +1,7 @@
 package data_structures;
 
 import calc.VectorCalculus;
+import utils.Drawing;
 
 import java.awt.*;
 
@@ -23,17 +24,16 @@ public class Boundary implements CollisionPartner{
         return this.velocity;
     }
 
-    public void paint2D(Graphics g, int width, int height, double scale){
+    public void paint2D(Graphics g, double width, double height, double scale){
+        int windowHeight = (int)(height*scale);
         double slope = direction[1]/ direction[0];
-        int x1 = 0;
-        int y1 = (int)((-slope*position[0]*scale + position[1]*scale));
-        int x2 = width;
-        int y2 = (int)(((width - position[0]*scale)*slope+position[1]*scale));
-//        IO.print(x1);
-//        IO.print(x2);
-//        IO.print(y1);
-//        IO.print(y2);
-        g.drawLine(x1,height-y1,x2,height-y2);
+        double x1 = 0;
+        double y1 = -slope*position[0] + position[1];
+        double x2 = width;
+        double y2 = (x2 - position[0])*slope+position[1];
+        Rectangle rect = Drawing.transform2D(x1, y1, width,y2-y1, scale, false);
+
+        g.drawLine(rect.x,windowHeight-rect.y, rect.x + rect.width,windowHeight-(rect.y + rect.height));
     }
 
 

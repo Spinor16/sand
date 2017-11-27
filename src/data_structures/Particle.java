@@ -53,16 +53,13 @@ public class Particle implements CollisionPartner{
         return norm2;
     }
 
-    public void paint2D(Graphics g, double scale, int size, int height, int nParticles) {
-        Rectangle scaledValues = Drawing.transform2D(position[0], position[1], size/scale, size/scale, scale,true);
-        int x1 = (int)(scaledValues.x - radius*scale);
-        int y1 = (int)(scaledValues.y -radius*scale);
-        int R =  (int)(2*radius*scale);
+    public void paint2D(Graphics g, double scale, int height, int nParticles) {
+        Rectangle scaledValues = Drawing.transform2D(position[0], position[1], 2*radius, 2*radius, scale,true);
 
         //color coupled to index, probably not optimal
         Color myColor = new Color((int)((double)index/nParticles*155), (int)((double)index/nParticles*205),(int)((double)index/nParticles*255));
         g.setColor(myColor);
 
-        g.fillOval(x1, height-y1, R, R);
+        g.fillOval(scaledValues.x , height - scaledValues.y, scaledValues.width, scaledValues.height);
     }
 }
