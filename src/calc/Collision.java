@@ -40,17 +40,34 @@ public class Collision {
         double dist2 = Math.pow(particle1.radius + particle2.radius,2);
 
 
-        double determinant = - (VectorCalculus.norm2(DX) - dist2) * VectorCalculus.norm2(DV)
+        double discriminant = - (VectorCalculus.norm2(DX) - dist2) * VectorCalculus.norm2(DV)
                             + VectorCalculus.dot(DV,DX)*VectorCalculus.dot(DV,DX);
 
-        if (determinant < 0){
+        if (discriminant < 0){
             return -1;
         }
 
+        double a = VectorCalculus.dot(DV,DV);
+        double b = VectorCalculus.dot(DX,DV);
+        double c = VectorCalculus.dot(DX,DX) - dist2;
 
-        double collisionTime = - (Math.sqrt(determinant) + VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
+        double q = -(b + Math.copySign(Math.sqrt(discriminant),c));
 
-        return collisionTime;
+        double collisionTime = q / a;
+        double collisionTime2 = c / q;
+        double min = Math.min(collisionTime, collisionTime2);
+
+        if(min>0){
+            return min;
+        }
+
+        else{
+            return Math.max(collisionTime, collisionTime2);
+        }
+
+        //double collisionTime = - (Math.sqrt(discriminant) + VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
+
+        //return collisionTime;
 
     }
 
