@@ -15,7 +15,7 @@ public class Particle implements CollisionPartner{
     public final double mass;
     public final double radius;
     public int index;
-    private double speedFactor;
+    //private double speedFactor;
 
     public Particle(double[] position, double[] velocity) {
         //mass

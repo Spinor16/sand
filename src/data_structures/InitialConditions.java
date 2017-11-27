@@ -107,7 +107,7 @@ public class InitialConditions extends JPanel {
 //        rightWall = new Boundary[dimensions];
 
         double[] lWallVelocity = {0,0};
-        double[] lWallPosition = {width/2,0};
+        double[] lWallPosition = {width/2,height/4};
         angle = (Math.PI-angle)/2;
         double[] lWallDirection = {Math.cos(angle), Math.sin(angle)};
         lowerWallL = new Boundary(lWallVelocity, lWallPosition, lWallDirection);
