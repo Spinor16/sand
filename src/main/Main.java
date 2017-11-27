@@ -26,7 +26,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.001,200);
+        main.run(0.02,200);
 
     }
 
@@ -41,7 +41,7 @@ public class Main extends JPanel{
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(30,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(30,1,1,Math.PI/1.7);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -49,7 +49,6 @@ public class Main extends JPanel{
 
         //Initializations of temp vars
         double time = 0;
-        double DeltaT = 0;
         CollisionEvent minPP;
         CollisionEvent minPB;
         double collisionTime;
@@ -118,7 +117,7 @@ public class Main extends JPanel{
 
 
             paint = false;
-            while(DeltaT < timeStep){
+            while(true){
 
                 tMinPP = Double.POSITIVE_INFINITY;
                 tMinPB = Double.POSITIVE_INFINITY;
@@ -130,7 +129,11 @@ public class Main extends JPanel{
                     tMinPB = heapPB.min().t();
                 }
 
-                if (tMinPP < tMinPB){
+                if (tMinPB > timeStep && tMinPP > timeStep) {
+                    break;
+                }
+
+                else if (tMinPP < tMinPB){
                     try {
                         minPP = heapPP.removeMin();
 
@@ -164,8 +167,6 @@ public class Main extends JPanel{
                     } catch (HeapException e) {
                         e.printStackTrace();
                     }
-
-                    DeltaT = tMinPP;
                 }
                 else if (tMinPP > tMinPB){
                     try {
@@ -196,24 +197,21 @@ public class Main extends JPanel{
                     } catch (HeapException e) {
                         e.printStackTrace();
                     }
-
-                    DeltaT = tMinPB;
                 }
             }
 
             //project forward particles
             for (int i = 0; i < particles.length; i++) {
-                Collision.projectForwardParticle(particles[i],DeltaT);
+                Collision.projectForwardParticle(particles[i], timeStep);
             }
 
             //project forward boundaries
             for (int i = 0; i < boundaries.length; i++) {
-                Collision.projectForwardBoundary(boundaries[i],DeltaT);
+                Collision.projectForwardBoundary(boundaries[i], timeStep);
             }
 
             tree.buildTree(tree.root);
-            time += DeltaT;
-            DeltaT = 0;
+            time += timeStep;
             //paint = time - movieTime > movieTimeStep;
             paint = true;
             if (paint) {
@@ -222,7 +220,7 @@ public class Main extends JPanel{
 
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(50);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
