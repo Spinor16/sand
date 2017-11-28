@@ -41,7 +41,7 @@ public class Main extends JPanel{
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(30,1,1,Math.PI/1.7);
+        InitialConditions init = new InitialConditions(30,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -150,16 +150,16 @@ public class Main extends JPanel{
                         heapPB.removeEventsInRowSE(minPP.j(),events);
 
                         //Insert new CollisionEvents for i, particle-particle
-                        updatePP(minPP.i(), minPP, heapPP, nearestNeighbours[minPP.i()], events);
+                        updatePP(minPP.i(), minPP, heapPP, nearestNeighbours[minPP.i()], events, true);
 
                         //Insert new CollisionEvents for j, particle-particle
-                        updatePP(minPP.j(), minPP, heapPP, nearestNeighbours[minPP.j()], events);
+                        updatePP(minPP.j(), minPP, heapPP, nearestNeighbours[minPP.j()], events, true);
 
                         //Insert new CollisionEvents for i, particle-boundary
-                        updatePB(minPP.i(), minPP, heapPB, events);
+                        updatePB(minPP.i(), minPP, heapPB, events, false);
 
                         //Insert new CollisionEvents for j, particle-boundary
-                        updatePB(minPP.j(), minPP, heapPB, events);
+                        updatePB(minPP.j(), minPP, heapPB, events, false);
 
                         //save for later
                         events.add(minPP);
@@ -186,10 +186,10 @@ public class Main extends JPanel{
 
 
                         //Insert new CollisionEvents for i, particle-particle
-                        updatePP(minPB.i(), minPB, heapPP, nearestNeighbours[minPB.i()], events);
+                        updatePP(minPB.i(), minPB, heapPP, nearestNeighbours[minPB.i()], events, false);
 
                         //Insert new CollisionEvents for i, particle-boundary
-                        updatePB(minPB.i(), minPB, heapPB, events);
+                        updatePB(minPB.i(), minPB, heapPB, events, true);
 
                         //save for later
                         events.add(minPB);
@@ -231,7 +231,7 @@ public class Main extends JPanel{
     }
 
     private void updatePP(int pUpdateIndex, CollisionEvent minEvent, SymmetricCollisionHeap heap,
-                          int[] nearestNeighbours, ArrayList<CollisionEvent> events)
+                          int[] nearestNeighbours, ArrayList<CollisionEvent> events, boolean isSameCollisionType)
                                             throws HeapException {
 
         for (int index : nearestNeighbours) {
@@ -241,7 +241,7 @@ public class Main extends JPanel{
             int max = Math.max(pUpdateIndex,index);
 
             //exclude possibility of having same collision twice
-            if (min == minEvent.i() && max == minEvent.j()){
+            if (isSameCollisionType && min == minEvent.i() && max == minEvent.j()){
                 continue;
             }
 
@@ -255,13 +255,13 @@ public class Main extends JPanel{
     }
 
     private void updatePB(int pUpdateIndex, CollisionEvent minEvent, CollisionHeap heap,
-                          ArrayList<CollisionEvent> events) throws HeapException {
+                          ArrayList<CollisionEvent> events, boolean isSameCollisionType) throws HeapException {
 
         for (int boundaryIndex = 0; boundaryIndex < boundaries.length; boundaryIndex++) {
             double collisionTime = 0;
 
             //exclude possibility of having same collision twice
-            if (pUpdateIndex == minEvent.i() && boundaryIndex == minEvent.j()){
+            if (isSameCollisionType && pUpdateIndex == minEvent.i() && boundaryIndex == minEvent.j()){
                 continue;
             }
             collisionTime = Collision.findCollisionTime(particles[pUpdateIndex], boundaries[boundaryIndex]);

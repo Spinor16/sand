@@ -5,7 +5,7 @@ import data_structures.Particle;
 
 public class Collision {
     private static double[] g = {0, -9.81};
-    private static double COR = 0.7;
+    private static double COR = 0.2;
     private static double[] temp = new double[]{0,0};
     private static double[] temp2 = new double[]{0,0};
     private static double[] temp3 = new double[]{0,0};
@@ -179,6 +179,10 @@ public class Collision {
         //Calculate new velocity particle 2
         VectorCalculus.minusSE(particle2.velocity, VectorCalculus.mult(temp,collisionMomentum / particle2.mass, n));
 
+        //Project back velocities
+        VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
+        VectorCalculus.minusSE(particle2.velocity,VectorCalculus.mult(temp,collisionTime,g));
+
         //Project back positions
         VectorCalculus.minusSE(particle1.position,VectorCalculus.mult(temp,collisionTime,particle1.velocity));
         VectorCalculus.minusSE(particle1.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
@@ -186,9 +190,7 @@ public class Collision {
         VectorCalculus.minusSE(particle2.position,VectorCalculus.mult(temp,collisionTime,particle2.velocity));
         VectorCalculus.minusSE(particle2.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
 
-        //Project back velocities
-//        VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
-//        VectorCalculus.minusSE(particle2.velocity,VectorCalculus.mult(temp,collisionTime,g));
+
 
     }
 
@@ -214,10 +216,14 @@ public class Collision {
         VectorCalculus.plusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
 
         //Calculate velocity at collision position
-        VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
+        VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
 
         //Calculate tangential component
         VectorCalculus.mult(Vt,VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);
+
+        //make sure Vt is parallel to particle.velocity
+        int sign = (int) Math.signum(VectorCalculus.dot(Vt,particle.velocity));
+        VectorCalculus.mult(sign,Vt);
 
         double vi2 = VectorCalculus.norm2(particle.velocity);
 
@@ -225,15 +231,18 @@ public class Collision {
         particle.velocity = VectorCalculus.minus(VectorCalculus.mult(temp,2, Vt),particle.velocity);
 
         //Consider energy loss
+        //first normalize particle.velocity
         particle.velocity = VectorCalculus.divide(VectorCalculus.norm(particle.velocity),particle.velocity);
+        //then multiply with energy loss corrected absolute value
         VectorCalculus.multSE(Math.sqrt((1- COR)*vi2), particle.velocity);
+
+        //Project back velocity
+        VectorCalculus.minusSE(particle.velocity,VectorCalculus.mult(temp,collisionTime,g));
 
         //Project back position
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,collisionTime,particle.velocity));
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
 
-        //Project back velocity
-//        VectorCalculus.minusSE(particle.velocity,VectorCalculus.mult(temp,collisionTime,g));
     }
 
     public static void resolveCollision(Particle particle1, Particle particle2){
