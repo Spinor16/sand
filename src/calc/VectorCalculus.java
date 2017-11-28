@@ -166,4 +166,25 @@ public class VectorCalculus {
         return ret;
     }
 
+    public static double sqrt(double a, double b, double c) {
+
+        double discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0){
+            return -1;
+        }
+        double q = -(b + Math.copySign(Math.sqrt(discriminant),c));
+
+        double collisionTime = q / 2 / a;
+        double collisionTime2 = c / q;
+        double min = Math.min(collisionTime, collisionTime2);
+
+        if(min>0){
+            return min;
+        }
+        else{
+            return Math.max(collisionTime, collisionTime2);
+        }
+    }
+
 }

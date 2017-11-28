@@ -39,31 +39,11 @@ public class Collision {
         //distance squared between particle centers when colliding
         double dist2 = Math.pow(particle1.radius + particle2.radius,2);
 
-
-        double discriminant = - (VectorCalculus.norm2(DX) - dist2) * VectorCalculus.norm2(DV)
-                            + VectorCalculus.dot(DV,DX)*VectorCalculus.dot(DV,DX);
-
-        if (discriminant < 0){
-            return -1;
-        }
-
-        double a = VectorCalculus.dot(DV,DV);
+        double a = 0.5 * VectorCalculus.dot(DV,DV);
         double b = VectorCalculus.dot(DX,DV);
-        double c = VectorCalculus.dot(DX,DX) - dist2;
+        double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
 
-        double q = -(b + Math.copySign(Math.sqrt(discriminant),c));
-
-        double collisionTime = q / a;
-        double collisionTime2 = c / q;
-        double min = Math.min(collisionTime, collisionTime2);
-
-        if(min>0){
-            return min;
-        }
-
-        else{
-            return Math.max(collisionTime, collisionTime2);
-        }
+        return VectorCalculus.sqrt(a, b, c);
 
         //double collisionTime = - (Math.sqrt(discriminant) + VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
 
@@ -109,20 +89,26 @@ public class Collision {
         //calculate distance between particle and boundary
         double dist = DXn - particle.radius;
 
-        double determinant = Math.pow(DVn / gn, 2) + 2  * dist / gn;
+//        double discriminant = Math.pow(DVn / gn, 2) + 2  * dist / gn;
+//
+//        if (discriminant < 0){
+//            return -1;
+//        }
+//
+//        double collisionTime = - DVn / gn + Math.sqrt(discriminant);
+//
+//        if (collisionTime > 0) {
+//            return collisionTime;
+//        }
+//        else {
+//            return - DVn / gn - Math.sqrt(discriminant);
+//        }
 
-        if (determinant < 0){
-            return -1;
-        }
+        double a = 0.5 * gn;
+        double b = DVn;
+        double c = - dist;
 
-        double collisionTime = - DVn / gn + Math.sqrt(determinant);
-
-        if (collisionTime > 0) {
-            return collisionTime;
-        }
-        else {
-            return - DVn / gn - Math.sqrt(determinant);
-        }
+        return VectorCalculus.sqrt(a, b, c);
     }
 
     /**
@@ -145,7 +131,8 @@ public class Collision {
         double[] n = temp2;
         double[] DV = temp3;
 
-        // Calculate position of collision for particle1 and particle2, for this set positions to the collision positions
+        // Calculate position of collision for particle1 and particle2
+        // set positions to the collision positions
         VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,collisionTime, particle1.velocity));
         VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
 
