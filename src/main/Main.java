@@ -26,7 +26,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.02,200);
+        main.run(0.01,200);
 
     }
 
@@ -212,12 +212,10 @@ public class Main extends JPanel{
 
             tree.buildTree(tree.root);
             time += timeStep;
-            //paint = time - movieTime > movieTimeStep;
+
             paint = true;
             if (paint) {
                 repaint();
-                movieTime = time;
-
                 try {
                     //wait after every calculation to slow motion down
                     Thread.sleep(200);
@@ -244,14 +242,13 @@ public class Main extends JPanel{
 
             //exclude possibility of having same collision twice
             if (min == minEvent.i() && max == minEvent.j()){
-                return;
+                continue;
             }
 
             collisionTime = Collision.findCollisionTime(particles[min], particles[max]);
 
             //check if the collision happens after minTime, i.e. if *real* collision
-            //implicitly check whether time is positive
-            if (collisionTime > minEvent.t()) {
+            if (collisionTime > 0 && collisionTime > minEvent.t()) {
                 resetAndInsert(min, max, heap, events, collisionTime);
             }
         }
@@ -265,13 +262,13 @@ public class Main extends JPanel{
 
             //exclude possibility of having same collision twice
             if (pUpdateIndex == minEvent.i() && boundaryIndex == minEvent.j()){
-                return;
+                continue;
             }
             collisionTime = Collision.findCollisionTime(particles[pUpdateIndex], boundaries[boundaryIndex]);
 
             //check if the collision happens after minTime, i.e. if *real* collision
             //implicitly check whether time is positive
-            if (collisionTime > minEvent.t()) {
+            if (collisionTime > 0 && collisionTime > minEvent.t()) {
                 resetAndInsert(pUpdateIndex, boundaryIndex, heap, events, collisionTime);
             }
         }
