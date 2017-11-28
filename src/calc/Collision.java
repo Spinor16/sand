@@ -187,8 +187,8 @@ public class Collision {
         VectorCalculus.minusSE(particle2.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
 
         //Project back velocities
-        VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
-        VectorCalculus.minusSE(particle2.velocity,VectorCalculus.mult(temp,collisionTime,g));
+//        VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
+//        VectorCalculus.minusSE(particle2.velocity,VectorCalculus.mult(temp,collisionTime,g));
 
     }
 
@@ -233,7 +233,7 @@ public class Collision {
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
 
         //Project back velocity
-        VectorCalculus.minusSE(particle.velocity,VectorCalculus.mult(temp,collisionTime,g));
+//        VectorCalculus.minusSE(particle.velocity,VectorCalculus.mult(temp,collisionTime,g));
     }
 
     public static void resolveCollision(Particle particle1, Particle particle2){
