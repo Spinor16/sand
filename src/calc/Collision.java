@@ -2,6 +2,7 @@ package calc;
 
 import data_structures.Boundary;
 import data_structures.Particle;
+import utils.IO;
 
 public class Collision {
     private static double[] g = {0, -9.81};
@@ -89,21 +90,6 @@ public class Collision {
         //calculate distance between particle and boundary
         double dist = DXn - particle.radius;
 
-//        double discriminant = Math.pow(DVn / gn, 2) + 2  * dist / gn;
-//
-//        if (discriminant < 0){
-//            return -1;
-//        }
-//
-//        double collisionTime = - DVn / gn + Math.sqrt(discriminant);
-//
-//        if (collisionTime > 0) {
-//            return collisionTime;
-//        }
-//        else {
-//            return - DVn / gn - Math.sqrt(discriminant);
-//        }
-
         double a = 0.5 * gn;
         double b = DVn;
         double c = - dist;
@@ -140,8 +126,8 @@ public class Collision {
         VectorCalculus.plusSE(particle2.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
 
         //Calculate velocity at collision position
-        VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
-        VectorCalculus.plusSE(particle2.velocity, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
+        VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp,collisionTime,g));
+        VectorCalculus.plusSE(particle2.velocity, VectorCalculus.mult(temp,collisionTime,g));
 
         //Calculate direction, unit vector connecting ball centers
         VectorCalculus.minus(n,particle1.position,particle2.position);
@@ -203,7 +189,22 @@ public class Collision {
         VectorCalculus.plusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
 
         //Calculate velocity at collision position
-        VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
+        VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp,collisionTime, g));
+
+        //for debugging
+//        double[] DX = VectorCalculus.minus(boundary.position,particle.position);
+//        int sign = (int) Math.signum(VectorCalculus.dot(DX,boundary.normal));
+//        VectorCalculus.multSE(sign,boundary.normal);
+//
+//        double DXn = VectorCalculus.dot(DX,boundary.normal);
+//        double dist = DXn - particle.radius;
+//        if (dist < 0) {
+//            VectorCalculus.plusSE(particle.position,VectorCalculus.mult(temp,dist*10,boundary.normal));
+//            DX = VectorCalculus.minus(boundary.position,particle.position);
+//            DXn = VectorCalculus.dot(DX,boundary.normal);
+//            IO.print(DXn - particle.radius);
+//        }
+
 
         //Calculate tangential component
         VectorCalculus.mult(Vt,VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);
@@ -229,7 +230,6 @@ public class Collision {
         //Project back position
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,collisionTime,particle.velocity));
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
-
     }
 
     public static void resolveCollision(Particle particle1, Particle particle2){

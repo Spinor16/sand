@@ -176,7 +176,7 @@ public class VectorCalculus {
         double q = -(b + Math.copySign(Math.sqrt(discriminant),c));
 
         double collisionTime = q / 2 / a;
-        double collisionTime2 = c / q;
+        double collisionTime2 = 2 * c / q;
         double min = Math.min(collisionTime, collisionTime2);
 
         if(min>0){
