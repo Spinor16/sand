@@ -5,7 +5,7 @@ import data_structures.Particle;
 
 public class Collision {
     private static double[] g = {0, -9.81};
-    private static double COR = 0.2;
+    private static double COR = 0.1;
     private static double[] temp = new double[]{0,0};
     private static double[] temp2 = new double[]{0,0};
     private static double[] temp3 = new double[]{0,0};

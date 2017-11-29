@@ -26,7 +26,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.01,200);
+        main.run(0.002,200);
 
     }
 
@@ -37,11 +37,11 @@ public class Main extends JPanel{
         //Settings
 //        int nParticles = 50;
 //        int nBoundaries = 2;
-        int nNearestNeighbours = 30;
+        int nNearestNeighbours = 216;
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(30,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(216,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -218,7 +218,7 @@ public class Main extends JPanel{
                 repaint();
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(200);
+                    Thread.sleep(20);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

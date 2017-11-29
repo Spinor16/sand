@@ -15,6 +15,8 @@ public class Particle implements CollisionPartner{
     public final double mass;
     public final double radius;
     public int index;
+
+    public int colorIndex;
     //private double speedFactor;
 
     public Particle(double[] position, double[] velocity) {
@@ -39,6 +41,10 @@ public class Particle implements CollisionPartner{
 
     public double velocity(int i) { return velocity[i]; }
 
+    public void setColorIndex(int colorIndex) {
+        this.colorIndex = colorIndex;
+    }
+
     //distance_squared between own position and vector2
     public double dist2(double[] vector2){
         return dist2(this.position, vector2);
@@ -57,8 +63,10 @@ public class Particle implements CollisionPartner{
         Rectangle scaledValues = Drawing.transform2D(position[0], position[1], 2*radius, 2*radius, scale,true);
 
         //color coupled to index, probably not optimal
-        Color myColor = new Color((int)((double)index/nParticles*155), (int)((double)index/nParticles*205),(int)((double)index/nParticles*255));
+        Color myColor = new Color((int)((double)colorIndex/nParticles*155), (int)((double)colorIndex/nParticles*205),(int)((double)colorIndex/nParticles*255));
         g.setColor(myColor);
+
+        if(colorIndex==0){g.setColor(Color.RED);}
 
         g.fillOval(scaledValues.x , height - scaledValues.y, scaledValues.width, scaledValues.height);
     }
