@@ -45,18 +45,13 @@ public class InitialConditions extends JPanel {
     public double width;
     public double height;
     public double angle;
-    public final double particleDistanceInitial = 0.01; // around the particle, in units of the radius
+    public final double particleDistanceInitial = 0.4; // around the particle, in units of the radius
     public final int nParticles;
 
-    //boundary array
-    //public Boundary[] boundaryPoints;
-    //public Boundary[] upperWall;
-    //public Boundary[] leftWall;
-    //public Boundary[] rightWall;
-
-    private Boundary[] boundaries = new Boundary[2];
+    private Boundary[] boundaries = new Boundary[3];
     private Boundary lowerWallL;
     private Boundary lowerWallR;
+    private Boundary floor;
 
     //particle array
     private Particle[] particles;
@@ -107,7 +102,7 @@ public class InitialConditions extends JPanel {
 //        rightWall = new Boundary[dimensions];
 
         double[] lWallVelocity = {0,0};
-        double[] lWallPosition = {width/2,0};
+        double[] lWallPosition = {width/2.,0};
         angle = (Math.PI-angle)/2;
         double[] lWallDirection = {Math.cos(angle), Math.sin(angle)};
 //        VectorCalculus.plusSE(lWallPosition,VectorCalculus.mult(0.3,lWallDirection));
@@ -119,19 +114,33 @@ public class InitialConditions extends JPanel {
 //        VectorCalculus.plusSE(rWallPosition,VectorCalculus.mult(0.3,rWallDirection));
         lowerWallR = new Boundary(rWallVelocity, rWallPosition, rWallDirection);
 
+        double[] floorVelocity = {0,0};
+        double[] floorPosition = {0, 0.2*height};
+        double[] floorDirection = {1, 0};
+//        VectorCalculus.plusSE(rWallPosition,VectorCalculus.mult(0.3,rWallDirection));
+        floor = new Boundary(floorVelocity, floorPosition, floorDirection);
+
+
         boundaries[0] = lowerWallL;
         boundaries[1] = lowerWallR;
+        boundaries[2] = floor;
     }
 
     /*
     Set the particles in one line along the whole width. Works in 2D
      */
     private void makeParticles() {
+        int nParticlesInRow = (int)(width/(2*pRadius*(particleDistanceInitial+1)));
+        double displUp = 0; //displace upwards if row full (based on int-division)
         for (int i = 0; i < particles.length; i++){
-            particles[i].position[0] = origin[0]+(i+1)*(2*particleDistanceInitial+pRadius);
-            particles[i].position[1] = origin[1]+height;
+
+            displUp = (double)(i/nParticlesInRow)*(2*pRadius*(particleDistanceInitial+1));
+
+            particles[i].position[0] = origin[0]+((i % nParticlesInRow)+1)*(2*pRadius*(particleDistanceInitial+1));
+            particles[i].position[1] = origin[1]+height+displUp;
 
             particles[i].velocity[1] = 0;
+            particles[i].setColorIndex(i);
         }
 //        particles[0].velocity[0] = -1;
 //        particles[1].velocity[0] = 1;
