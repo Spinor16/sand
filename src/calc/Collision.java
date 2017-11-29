@@ -44,6 +44,7 @@ public class Collision {
         double b = VectorCalculus.dot(DX,DV);
         double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
 
+        //fixme: check if in allowed region: no particle overlapping
         return VectorCalculus.sqrt(a, b, c);
 
         //double collisionTime = - (Math.sqrt(discriminant) + VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
@@ -94,6 +95,13 @@ public class Collision {
         double b = DVn;
         double c = - dist;
 
+        //check if particle overlaps with boundary
+        //if yes, shift particle perpendicularly to boundary by a distance dist
+        //and return collisionTime = 0 so no collision is processed before this one
+        if (c > 0){
+            VectorCalculus.minusSE(particle.position,VectorCalculus.mult(c,boundary.normal));
+            return 0;
+        }
         return VectorCalculus.sqrt(a, b, c);
     }
 
@@ -190,21 +198,6 @@ public class Collision {
 
         //Calculate velocity at collision position
         VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp,collisionTime, g));
-
-        //for debugging
-//        double[] DX = VectorCalculus.minus(boundary.position,particle.position);
-//        int sign = (int) Math.signum(VectorCalculus.dot(DX,boundary.normal));
-//        VectorCalculus.multSE(sign,boundary.normal);
-//
-//        double DXn = VectorCalculus.dot(DX,boundary.normal);
-//        double dist = DXn - particle.radius;
-//        if (dist < 0) {
-//            VectorCalculus.plusSE(particle.position,VectorCalculus.mult(temp,dist*10,boundary.normal));
-//            DX = VectorCalculus.minus(boundary.position,particle.position);
-//            DXn = VectorCalculus.dot(DX,boundary.normal);
-//            IO.print(DXn - particle.radius);
-//        }
-
 
         //Calculate tangential component
         VectorCalculus.mult(Vt,VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);

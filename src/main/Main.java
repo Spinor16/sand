@@ -26,7 +26,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.002,200);
+        main.run(0.0002,200);
 
     }
 
@@ -37,11 +37,11 @@ public class Main extends JPanel{
         //Settings
 //        int nParticles = 50;
 //        int nBoundaries = 2;
-        int nNearestNeighbours = 216;
+        int nNearestNeighbours = 20;
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(216,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(20,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -75,7 +75,7 @@ public class Main extends JPanel{
                     int NNj = nearestNeighbours[particle.index][j]; // particle index of current nearest neighbour
                     if (particle.index < NNj) {
                         collisionTime = Collision.findCollisionTime(particle, particles[NNj]);
-                        if (collisionTime > 0) {
+                        if (collisionTime >= 0) {
                             try {
                                 heapPP.insert(
                                         new CollisionEvent(
@@ -98,7 +98,7 @@ public class Main extends JPanel{
             for (Particle particle : particles) {
                 for (int j = 0; j < boundaries.length; j++) {
                     collisionTime = Collision.findCollisionTime(particle, boundaries[j]);
-                    if (collisionTime > 0) {
+                    if (collisionTime >= 0) {
                         try {
                             heapPB.insert(
                                     new CollisionEvent(
@@ -217,7 +217,7 @@ public class Main extends JPanel{
                 repaint();
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(20);
+                    Thread.sleep(2);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -247,7 +247,7 @@ public class Main extends JPanel{
             collisionTime = Collision.findCollisionTime(particles[min], particles[max]);
 
             //check if the collision happens after minTime, i.e. if *real* collision
-            if (collisionTime > minEvent.t()) {
+            if (collisionTime >= minEvent.t()) {
                 resetAndInsert(min, max, heap, events, collisionTime);
             }
         }
@@ -267,7 +267,7 @@ public class Main extends JPanel{
 
             //check if the collision happens after minTime, i.e. if *real* collision
             //implicitly check whether time is positive
-            if (collisionTime > minEvent.t()) {
+            if (collisionTime >= minEvent.t()) {
                 resetAndInsert(pUpdateIndex, boundaryIndex, heap, events, collisionTime);
             }
         }
