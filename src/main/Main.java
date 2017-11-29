@@ -132,7 +132,6 @@ public class Main extends JPanel{
                 if (tMinPB > timeStep && tMinPP > timeStep) {
                     break;
                 }
-
                 else if (tMinPP < tMinPB){
                     try {
                         minPP = heapPP.removeMin();
@@ -174,13 +173,13 @@ public class Main extends JPanel{
 
                         Collision.resolveCollision(particles[minPB.i()], boundaries[minPB.j()], minPB.t());
 
-                        //Events involving particle i or j are removed from heap
+                        //Events involving particle i is removed from heap
                         //and stored in array events for further use after reset
                         heapPP.removeEventsContainingIndexSE(minPB.i(), events);
 
                         //Events involving particle i are removed from heap
                         //and stored in array events for further use after reset
-                        //Other events invloving boundary are still valid as boundary
+                        //Other events involving boundary are still valid as boundary
                         //is not changed
                         heapPB.removeEventsInRowSE(minPB.i(),events);
 
@@ -218,7 +217,7 @@ public class Main extends JPanel{
                 repaint();
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(200);
+                    Thread.sleep(20);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -248,7 +247,7 @@ public class Main extends JPanel{
             collisionTime = Collision.findCollisionTime(particles[min], particles[max]);
 
             //check if the collision happens after minTime, i.e. if *real* collision
-            if (collisionTime > 0 && collisionTime > minEvent.t()) {
+            if (collisionTime > minEvent.t()) {
                 resetAndInsert(min, max, heap, events, collisionTime);
             }
         }
@@ -268,7 +267,7 @@ public class Main extends JPanel{
 
             //check if the collision happens after minTime, i.e. if *real* collision
             //implicitly check whether time is positive
-            if (collisionTime > 0 && collisionTime > minEvent.t()) {
+            if (collisionTime > minEvent.t()) {
                 resetAndInsert(pUpdateIndex, boundaryIndex, heap, events, collisionTime);
             }
         }
@@ -299,7 +298,6 @@ public class Main extends JPanel{
         }
     }
 
-
     public void paint(Graphics g) {
         Rectangle bounds = getBounds();
 
@@ -324,6 +322,5 @@ public class Main extends JPanel{
             }
         }
     }
-
 
 }
