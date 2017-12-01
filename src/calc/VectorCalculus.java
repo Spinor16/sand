@@ -187,4 +187,42 @@ public class VectorCalculus {
         }
     }
 
+    public static double newtonRootsPoly4(double[] coeffs, double init, double eps){
+
+        double fVal = computePolyHorner(coeffs,4, init);
+        double fDeriv;
+        double counter = 0;
+        double t = init;
+        while (Math.abs(fVal) > eps && counter < 100) {
+            fVal = computePolyHorner(coeffs, 4, t);
+            fDeriv = computePolyDerivHorner(coeffs, 4, t);
+            t -= fVal / fDeriv;
+            counter++;
+        }
+
+        if (counter == 100){
+            return -1;
+        }
+        return t;
+    }
+
+    public static double computePolyHorner(double[] coeffs, int order, double x){
+        double result = 0;
+
+        for(int i = 0; i <= order; i++){
+            result = result * x + coeffs[i];
+        }
+
+        return result;
+    }
+
+    public static double computePolyDerivHorner(double[] coeffs, int order, double x){
+        double result = 0;
+
+        for(int i = 0; i <= order - 1 ; i++){
+            result = result * x + (order - i) * coeffs[i];
+        }
+
+        return result;
+    }
 }

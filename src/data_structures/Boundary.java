@@ -6,10 +6,11 @@ import utils.Drawing;
 import java.awt.*;
 
 public class Boundary implements CollisionPartner{
-    public double[] position;
-    public double[] direction; //direction
-    public double[] normal; //orthogonal to direction
-    public double[] velocity;
+    private double[] position;
+    private double[] direction; //direction
+    private double[] normal; //orthogonal to direction
+    private static double[] temp = new double[]{0,0};
+    private double[] velocity;
 
     public Boundary(double[] velocity, double[] position, double[] direction) {
         this.direction = direction;
@@ -20,8 +21,28 @@ public class Boundary implements CollisionPartner{
         this.velocity = velocity;
     }
 
-    public double[] velocity(double time){
-        return this.velocity;
+    public double[] getPosition() {
+        return position;
+    }
+
+    public double[] getDirection() {
+        return direction;
+    }
+
+    public double[] getNormal() {
+        return normal;
+    }
+
+    public double[] getVelocity() {
+        return velocity;
+    }
+
+    public void switchNormalSignTo(int sign){
+        VectorCalculus.multSE(sign,normal);
+    }
+
+    public void projectForward(double time){
+        VectorCalculus.plusSE(position,VectorCalculus.mult(temp,time,velocity));
     }
 
     public void paint2D(Graphics g, double width, double height, double scale){

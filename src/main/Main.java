@@ -1,6 +1,7 @@
 package main;
 
 import calc.Collision;
+import calc.VectorCalculus;
 import data_structures.*;
 import exceptions.HeapException;
 import utils.Drawing;
@@ -12,8 +13,8 @@ import java.util.ArrayList;
 public class Main extends JPanel{
 
     static BinaryTree tree;
-    static Particle[] particles;
-    static Boundary[] boundaries;
+    public static Particle[] particles;
+    public static Boundary[] boundaries;
     static boolean paint = false;
 
     public static void main(String[] args) {
@@ -56,31 +57,45 @@ public class Main extends JPanel{
         double tMinPB;
         ArrayList<CollisionEvent> events = new ArrayList<>(); //temporary storing of CollisionEvents
 
+        //Set correct normal vectors. Must point away from particles. This assumes all particles are
+        //on the same side of any wall.
+        for (Boundary boundary : boundaries) {
+            double[] DX = VectorCalculus.minus(boundary.getPosition(), particles[0].getPosition());
+            //Set boundary.normal in same direction as DXn
+            int sign = (int) Math.signum(VectorCalculus.dot(DX, boundary.getNormal()));
+            boundary.switchNormalSignTo(sign);
+        }
+
         while(time<endTime){
 
             SymmetricCollisionHeap heapPP = new SymmetricCollisionHeap(particles.length);
-            CollisionHeap heapPB = new CollisionHeap(particles.length,boundaries.length);
+            CollisionHeap heapPB = new CollisionHeap(particles.length, boundaries.length);
 
 
             //Look for nearestNeighbours
             int[][] nearestNeighbours = new int[particles.length][nNearestNeighbours];
             for (Particle particle  : particles) {
-                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,nNearestNeighbours);
+                nearestNeighbours[particle.getIndex()] = tree.getIndiceskNearestNeighbours(particle.getPosition(),nNearestNeighbours);
+            }
+
+            //check if particles are onBoundary and set accordingly
+            for (Particle particle : particles) {
+                Collision.checkIfOnBoundariesAndSet(particle, boundaries);
             }
 
 
             //Add CollisionTimes particle - particle
             for (Particle particle : particles) {
                 for (int j = 0; j < nNearestNeighbours; j++) {
-                    int NNj = nearestNeighbours[particle.index][j]; // particle index of current nearest neighbour
-                    if (particle.index < NNj) {
+                    int NNj = nearestNeighbours[particle.getIndex()][j]; // particle index of current nearest neighbour
+                    if (particle.getIndex() < NNj) {
                         collisionTime = Collision.findCollisionTime(particle, particles[NNj]);
                         if (collisionTime >= 0) {
                             try {
                                 heapPP.insert(
                                         new CollisionEvent(
                                                 collisionTime,
-                                                particle.index,
+                                                particle.getIndex(),
                                                 NNj
                                         )
                                 );
@@ -98,12 +113,12 @@ public class Main extends JPanel{
             for (Particle particle : particles) {
                 for (int j = 0; j < boundaries.length; j++) {
                     collisionTime = Collision.findCollisionTime(particle, boundaries[j]);
-                    if (collisionTime >= 0) {
+                    if (collisionTime > 0) {
                         try {
                             heapPB.insert(
                                     new CollisionEvent(
                                             collisionTime,
-                                            particle.index, // assertion fails
+                                            particle.getIndex(), // assertion fails
                                             j
                                     )
                             );
@@ -125,6 +140,7 @@ public class Main extends JPanel{
                 if (!heapPP.isEmpty()) {
                     tMinPP = heapPP.min().t();
                 }
+
                 if (!heapPB.isEmpty()) {
                     tMinPB = heapPB.min().t();
                 }
@@ -197,16 +213,21 @@ public class Main extends JPanel{
                         e.printStackTrace();
                     }
                 }
+
+//                //check if particles are onBoundary and set accordingly
+//                for (Particle particle : particles) {
+//                    Collision.checkIfOnBoundariesAndSet(particle, boundaries);
+//                }
             }
 
             //project forward particles
             for (int i = 0; i < particles.length; i++) {
-                Collision.projectForwardParticle(particles[i], timeStep);
+                particles[i].projectForward(timeStep);
             }
 
             //project forward boundaries
             for (int i = 0; i < boundaries.length; i++) {
-                Collision.projectForwardBoundary(boundaries[i], timeStep);
+                boundaries[i].projectForward(timeStep);
             }
 
             tree.buildTree(tree.root);
@@ -217,7 +238,7 @@ public class Main extends JPanel{
                 repaint();
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(2);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -236,8 +257,8 @@ public class Main extends JPanel{
         for (int index : nearestNeighbours) {
             double collisionTime = 0;
 
-            int min = Math.min(pUpdateIndex,index);
-            int max = Math.max(pUpdateIndex,index);
+            int min = Math.min(pUpdateIndex, index);
+            int max = Math.max(pUpdateIndex, index);
 
             //exclude possibility of having same collision twice
             if (isSameCollisionType && min == minEvent.i() && max == minEvent.j()){
@@ -318,7 +339,7 @@ public class Main extends JPanel{
             //Draw Boundaries
             g.setColor(Color.PINK);
             for (Boundary boundary: boundaries){
-                boundary.paint2D(g,1,1,scale);
+                boundary.paint2D(g,1,1, scale);
             }
         }
     }

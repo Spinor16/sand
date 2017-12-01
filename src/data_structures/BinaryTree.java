@@ -18,7 +18,7 @@ public class BinaryTree {
 
     public BinaryTree(Particle[] particles) {
         this.particles = particles;
-        dimensions = particles[0].position.length;
+        dimensions = particles[0].getPosition().length;
 
         double[] posMin = new double[dimensions];
         double[] posMax = new double[dimensions];
@@ -80,7 +80,7 @@ public class BinaryTree {
     public void buildTree(int dimension, Node currentNode) {
         if (currentNode.end - currentNode.start < 8) {
             for (int j = currentNode.start; j <= currentNode.end; j++) {
-                particles[j].index = j;
+                particles[j].setIndex(j);
             }
             return;
         }

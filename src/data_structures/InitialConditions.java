@@ -136,10 +136,10 @@ public class InitialConditions extends JPanel {
 
             displUp = (double)(i/nParticlesInRow)*(2*pRadius*(particleDistanceInitial+1));
 
-            particles[i].position[0] = origin[0]+((i % nParticlesInRow)+1)*(2*pRadius*(particleDistanceInitial+1));
-            particles[i].position[1] = origin[1]+height+displUp;
+            particles[i].setPosition(0, origin[0]+((i % nParticlesInRow)+1)*(2*pRadius*(particleDistanceInitial+1)));
+            particles[i].setPosition(1, origin[1]+height+displUp);
 
-            particles[i].velocity[1] = 0;
+            particles[i].setVelocity(1, -1);
             particles[i].setColorIndex(i);
         }
 //        particles[0].velocity[0] = -1;
