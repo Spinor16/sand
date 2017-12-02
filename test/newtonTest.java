@@ -16,7 +16,7 @@ public class newtonTest {
     @Test
     void newton() {
         double[] coeffs = new double[]{5,0,3,2,-96};
-        double root = VectorCalculus.newtonRootsPoly4(coeffs,-10000,1e-2);
+        double root = VectorCalculus.newtonRootsPoly(coeffs,-10000,1e-2,4);
         assert(root-2 < 1e-7);
     }
 

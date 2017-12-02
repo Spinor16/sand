@@ -187,22 +187,37 @@ public class VectorCalculus {
         }
     }
 
-    public static double newtonRootsPoly4(double[] coeffs, double init, double eps){
+    public static double newtonRootsSqrt(double c, double init, double eps){
 
-        double fVal = computePolyHorner(coeffs,4, init);
+        double counter = 0;
+        double t = init;
+        while (Math.abs(t - c / t) > eps && counter < 200000) {
+            t += c / t;
+            counter++;
+        }
+//
+//        if (counter == 100){
+//            return -1;
+//        }
+        return t;
+    }
+
+    public static double newtonRootsPoly(double[] coeffs, double init, double eps, int order){
+
+        double fVal = computePolyHorner(coeffs, order, init);
         double fDeriv;
         double counter = 0;
         double t = init;
-        while (Math.abs(fVal) > eps && counter < 100) {
-            fVal = computePolyHorner(coeffs, 4, t);
-            fDeriv = computePolyDerivHorner(coeffs, 4, t);
+        while (Math.abs(fVal) > eps && counter < 200000) {
+            fVal = computePolyHorner(coeffs, order, t);
+            fDeriv = computePolyDerivHorner(coeffs, order, t);
             t -= fVal / fDeriv;
             counter++;
         }
-
-        if (counter == 100){
-            return -1;
-        }
+//
+//        if (counter == 100){
+//            return -1;
+//        }
         return t;
     }
 

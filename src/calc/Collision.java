@@ -8,9 +8,9 @@ import utils.IO;
 public class Collision {
     public static final double[] g = {0, -9.81};
     public static final double COR = 0.7;
-    public static final double EPS = 1e-7;
-    private static double vCrit = 1e-1;
-    private static double distCrit = 1e-2;
+    public static final double EPS = 1e-9;
+    public static double vCrit = 5e-3;
+    public static double distCrit = 1e-2;
     private static double[] temp = new double[]{0,0};
     private static double[] temp2 = new double[]{0,0};
     private static double[] temp3 = new double[]{0,0};
@@ -51,27 +51,33 @@ public class Collision {
         double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
         double collisionTime = VectorCalculus.sqrt(a, b, c);
 
-        if (particle1.isOnBoundary() || particle2.isOnBoundary()){
+//        double[] coeffs = temp4;
+//        coeffs[0] = 2 * a;
+//        coeffs[1] = 2 * b;
+//        coeffs[2] = 2 * c;
+//        double collisionTime = VectorCalculus.newtonRootsPoly(coeffs, 0, EPS, 2);
 
-            //fixme: should test for existence of root
-
-            double[] coeffs = temp4;
-            double DG[] = temp5;
-            VectorCalculus.minus(DG,particle1.gOnBoundary(),particle2.gOnBoundary());
-
-            coeffs[0] = VectorCalculus.dot(DG,DG) / 4;
-
-            coeffs[1] = VectorCalculus.dot(DG,DV);
-
-            coeffs[2] = coeffs[1] + 2 * a;
-
-            coeffs[3] = 2 * b;
-
-            coeffs[4] = 2 * c;
-
-            collisionTime = VectorCalculus.newtonRootsPoly4(coeffs,collisionTime,EPS);
-        }
-
+//        if (collisionTime >0 && (particle1.isOnBoundary() || particle2.isOnBoundary())){
+//
+//            //fixme: should test for existence of root
+//
+//            double[] coeffs = temp4;
+//            double DG[] = temp5;
+//            VectorCalculus.minus(DG,particle1.gOnBoundary(),particle2.gOnBoundary());
+//
+//            coeffs[0] = VectorCalculus.dot(DG,DG) / 4;
+//
+//            coeffs[1] = VectorCalculus.dot(DG,DV);
+//
+//            coeffs[2] = coeffs[1] + 2 * a;
+//
+//            coeffs[3] = 2 * b;
+//
+//            coeffs[4] = 2 * c;
+//
+//            collisionTime = VectorCalculus.newtonRootsPoly(coeffs,collisionTime,EPS,4);
+//        }
+//
         return collisionTime;
 
     }
@@ -93,10 +99,6 @@ public class Collision {
         //D for Delta
         double[] DV = temp2;
         double[] DX = temp3;
-
-        if (particle.isOnBoundary() && particle.touchingBoundaries.contains(boundary)){
-            return -1;
-        }
 
         //Calculate Delta X and Delta V
         VectorCalculus.minus(DX,boundary.getPosition(),particle.getPosition());
@@ -122,7 +124,13 @@ public class Collision {
 
 
         double collisionTime = VectorCalculus.sqrt(a, b, c);
-
+//        double[] coeffs = temp4;
+//
+//        coeffs[0] = a;
+//        coeffs[1] = b;
+//        coeffs[2] = c;
+//
+//        double collisionTime = VectorCalculus.newtonRootsPoly(coeffs,1,EPS,2);
         return collisionTime;
     }
 
@@ -152,8 +160,6 @@ public class Collision {
 
         particle1.projectForward(collisionTime);
         particle2.projectForward(collisionTime);
-        checkIfOnBoundariesAndSet(particle1, Main.boundaries);
-        checkIfOnBoundariesAndSet(particle2, Main.boundaries);
 
         //Calculate direction, unit vector connecting ball centers
         VectorCalculus.minus(n,particle1.getPosition(),particle2.getPosition());
@@ -172,8 +178,8 @@ public class Collision {
         double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
 
         //Calculate new velocity particle 1 and 2
-        particle1.collideWithParticle(VectorCalculus.mult(temp, collisionMomentum / particle1.getMass(), n));
-        particle2.collideWithParticle(VectorCalculus.mult(temp,- collisionMomentum / particle2.getMass(), n));
+        particle1.collideWithParticle(VectorCalculus.mult(temp, collisionMomentum / particle1.getMass(), n),particle2);
+        particle2.collideWithParticle(VectorCalculus.mult(temp,- collisionMomentum / particle2.getMass(), n),particle1);
 
 
         //Project back velocities
@@ -203,12 +209,11 @@ public class Collision {
 
         //Calculate collision position
         particle.projectForward(collisionTime);
-        checkIfOnBoundariesAndSet(particle, Main.boundaries);
 
         //Calculate tangential component
         Vt = getVt(particle, boundary);
 
-        particle.collideWithBoundary(Vt);
+        particle.collideWithBoundary(Vt, boundary);
 
         particle.projectBackward(collisionTime);
     }
@@ -235,7 +240,8 @@ public class Collision {
         int sign = (int) Math.signum(VectorCalculus.dot(DX,boundary.getNormal()));
         //boundary.switchNormalSignTo(sign);
 
-        return sign*VectorCalculus.dot(particle.getVelocity(),boundary.getNormal());
+        double vn = sign*VectorCalculus.dot(particle.getVelocity(),boundary.getNormal());
+        return vn;
     }
 
 
@@ -281,18 +287,17 @@ public class Collision {
     }
 
 
-    public static void checkIfOnBoundariesAndSet(Particle particle, Boundary[] boundaries){
+    public static void checkIfOnBoundaries(Particle particle, Boundary[] boundaries){
         for (Boundary boundary : boundaries) {
-            checkIfOnBoundaryAndSet(particle,boundary);
+            checkIfOnBoundary(particle,boundary);
         }
     }
 
-    public static void checkIfOnBoundaryAndSet(Particle particle, Boundary boundary){
+    public static void checkIfOnBoundary(Particle particle, Boundary boundary){
 
         double dist = getDist(particle, boundary);
         double vn = getVn(particle, boundary);
-        if (dist < distCrit && Math.abs(vn) < vCrit && !particle.touchingBoundaries.contains(boundary)){
-            particle.setOnBoundary(boundary);
+        if (dist/vn < 1e-3 && !particle.touchingBoundaries.contains(boundary)){
             particle.touchingBoundaries.add(boundary);
         }
         else if ((dist > distCrit || Math.abs(vn) > vCrit) && particle.touchingBoundaries.contains(boundary)){

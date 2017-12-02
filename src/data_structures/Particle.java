@@ -2,6 +2,8 @@ package data_structures;
 
 import calc.Collision;
 import calc.VectorCalculus;
+import exceptions.HeapException;
+import main.Main;
 import utils.Drawing;
 
 import java.awt.Color;
@@ -88,32 +90,43 @@ public class Particle implements CollisionPartner{
         VectorCalculus.plusSE(velocity, summand);
     }
 
-    public void collideWithParticle(double[] collisionVelocity){
+    public void collideWithParticle(double[] collisionVelocity, Particle particle){
         updateVelocity(collisionVelocity);
         if (isOnBoundary()){
             //simulate collision with boundary
             //fixme: there is no energy loss in PB collision
             for (Boundary boundary : touchingBoundaries) {
-                updateVelocity(VectorCalculus.mult(temp,- 2 * Collision.getVn(this,boundary),boundary.getNormal()));
-                setOnBoundary(boundary);
+                double vn_other = Collision.getVn(particle,boundary);
+                double vn = Collision.getVn(this,boundary);
+                updateVelocity(VectorCalculus.mult(temp,- 2 * vn, boundary.getNormal()));
+
+                //this is physically incorrect
+                particle.updateVelocity(VectorCalculus.mult(temp,- 2 * vn_other, boundary.getNormal()));
             }
 
         }
     }
 
     public void setOnBoundary(Boundary boundary){
-        updateVelocity(VectorCalculus.mult(temp, - Collision.getVn(this,boundary), boundary.getNormal()));
+        double vn = Collision.getVn(this,boundary);
+        updateVelocity(VectorCalculus.mult(temp, -vn, boundary.getNormal()));
 //        updatePosition(VectorCalculus.mult(temp, - Collision.getDist(this, boundary), boundary.getNormal()));
     }
 
-    public void collideWithBoundary(double[] Vt){
+    public void collideWithBoundary(double[] Vt, Boundary boundary){
+
+//        if (touchingBoundaries.contains(boundary)) {
+//            setOnBoundary(boundary);
+//            return;
+//        }
+
         double vi2 = VectorCalculus.norm2(velocity);
 
         VectorCalculus.minus(velocity, VectorCalculus.mult(temp,2, Vt), velocity);
 
-        //Consider energy loss
-        //first normalize particle.velocity
-        //then multiply with energy loss corrected absolute value
+//        Consider energy loss
+//        first normalize particle.velocity
+//        then multiply with energy loss corrected absolute value
         VectorCalculus.divideSE(VectorCalculus.norm(velocity), velocity);
         VectorCalculus.multSE(Math.sqrt((1 - Collision.COR) * vi2), velocity);
 
@@ -123,30 +136,26 @@ public class Particle implements CollisionPartner{
         double[] g = Collision.g.clone();
         if (isOnBoundary()){
             for (Boundary boundary : touchingBoundaries) {
-                VectorCalculus.plusSE(g, Collision.getGn(boundary));
+                VectorCalculus.plusSE(g, VectorCalculus.mult(temp, - VectorCalculus.dot(g,boundary.getNormal()),boundary.getNormal()));
             }
 
         }
         return g;
     }
 
-    public void projectForward(double time){
+    public void projectForward(double time) {
         double[] g = gOnBoundary();
+
         updatePosition(VectorCalculus.mult(temp, time, velocity));
-        updatePosition(VectorCalculus.mult(temp,0.5 * time * time, g));
+        updatePosition(VectorCalculus.mult(temp, 0.5 * time * time, g));
 
         updateVelocity(VectorCalculus.mult(temp, time, g));
+
     }
 
     public void projectBackward(double time){
 
-        double[] g = Collision.g.clone();
-        if (isOnBoundary()){
-            for (Boundary boundary : touchingBoundaries) {
-                VectorCalculus.plusSE(g, Collision.getGn(boundary));
-            }
-        }
-
+        double[] g = gOnBoundary();
         updateVelocity(VectorCalculus.mult(temp, - time, g));
 
         updatePosition(VectorCalculus.mult(temp, - time, velocity));

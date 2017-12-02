@@ -17,6 +17,8 @@ public class Main extends JPanel{
     public static Boundary[] boundaries;
     static boolean paint = false;
 
+    public static SymmetricCollisionHeap heapPP;
+    public static CollisionHeap heapPB;
     public static void main(String[] args) {
 
 
@@ -27,7 +29,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.0002,200);
+        main.run(0.002,200);
 
     }
 
@@ -38,11 +40,11 @@ public class Main extends JPanel{
         //Settings
 //        int nParticles = 50;
 //        int nBoundaries = 2;
-        int nNearestNeighbours = 20;
+        int nNearestNeighbours = 3;
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(20,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(3,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -68,8 +70,8 @@ public class Main extends JPanel{
 
         while(time<endTime){
 
-            SymmetricCollisionHeap heapPP = new SymmetricCollisionHeap(particles.length);
-            CollisionHeap heapPB = new CollisionHeap(particles.length, boundaries.length);
+            heapPP = new SymmetricCollisionHeap(particles.length);
+            heapPB = new CollisionHeap(particles.length, boundaries.length);
 
 
             //Look for nearestNeighbours
@@ -78,10 +80,10 @@ public class Main extends JPanel{
                 nearestNeighbours[particle.getIndex()] = tree.getIndiceskNearestNeighbours(particle.getPosition(),nNearestNeighbours);
             }
 
-            //check if particles are onBoundary and set accordingly
-            for (Particle particle : particles) {
-                Collision.checkIfOnBoundariesAndSet(particle, boundaries);
-            }
+//            //check if particles are onBoundary and set accordingly
+//            for (Particle particle : particles) {
+//                Collision.checkIfOnBoundaries(particle, boundaries);
+//            }
 
 
             //Add CollisionTimes particle - particle
@@ -216,7 +218,7 @@ public class Main extends JPanel{
 
 //                //check if particles are onBoundary and set accordingly
 //                for (Particle particle : particles) {
-//                    Collision.checkIfOnBoundariesAndSet(particle, boundaries);
+//                    Collision.checkIfOnBoundaries(particle, boundaries);
 //                }
             }
 
@@ -238,7 +240,7 @@ public class Main extends JPanel{
                 repaint();
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(1);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
