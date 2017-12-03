@@ -20,9 +20,17 @@ public class VectorCalculus {
 
     public static void plusSE(double[] vector, double[] vector2){
         for (int i = 0; i < vector.length; i++) {
-            vector[i] -= vector2[i];
+            vector[i] += vector2[i];
 
         }
+    }
+
+    public static double[] plus(double[] result, double[] vector, double[] vector2){
+        for (int i = 0; i < vector.length; i++) {
+            result[i] = vector[i] + vector2[i];
+
+        }
+        return result;
     }
 
     public static double[] plus(double[] vector, double[] vector2){
@@ -34,11 +42,20 @@ public class VectorCalculus {
         return ret;
     }
 
+
     public static void minusSE(double[] vector, double[] vector2){
         for (int i = 0; i < vector.length; i++) {
             vector[i] -= vector2[i];
 
         }
+    }
+
+    public static double[] minus(double[] result, double[] vector, double[] vector2){
+        for (int i = 0; i < vector.length; i++) {
+            result[i] = vector[i] - vector2[i];
+
+        }
+        return result;
     }
 
 
@@ -77,6 +94,14 @@ public class VectorCalculus {
         }
     }
 
+    public static double[] mult(double[] result, double b, double[] vector){
+        for (int i = 0; i < vector.length; i++) {
+            result[i] = vector[i] * b;
+
+        }
+        return result;
+    }
+
     public static double[] mult(double b, double[] vector){
         double[] ret = new double[vector.length];
         for (int i = 0; i < vector.length; i++) {
@@ -89,6 +114,14 @@ public class VectorCalculus {
         for (int i = 0; i < vector.length; i++) {
             vector[i] /= b;
         }
+    }
+
+    public static double[] divide(double[] result, double b, double[] vector){
+        for (int i = 0; i < vector.length; i++) {
+            result[i] = vector[i] / b;
+
+        }
+        return result;
     }
 
     public static double[] divide(double b, double[] vector){
@@ -131,6 +164,27 @@ public class VectorCalculus {
         ret[1] = -vector[0];
 
         return ret;
+    }
+
+    public static double sqrt(double a, double b, double c) {
+
+        double discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0){
+            return -1;
+        }
+        double q = -(b + Math.copySign(Math.sqrt(discriminant),c));
+
+        double collisionTime = q / 2 / a;
+        double collisionTime2 = 2 * c / q;
+        double min = Math.min(collisionTime, collisionTime2);
+
+        if(min>0){
+            return min;
+        }
+        else{
+            return Math.max(collisionTime, collisionTime2);
+        }
     }
 
 }

@@ -10,19 +10,19 @@ public class BinaryTree {
     public final Node root;
     public final Particle[] particles;
     private boolean isBuilt = false;
+    public final int dimensions;
 //    int swaps = 0;
 //    int comparisons = 0;
 //    int operations = 0;
 //    int partitions = 0;
 
-    public BinaryTree(int dimensions, int nParticles, IGenerator randomGeneratorPosition, IGenerator randomGeneratorVelocity) {
-        particles = new Particle[nParticles];
-        //double pPos[] =
-        for (int i = 0; i < particles.length; i++) {
-            particles[i] = new Particle(dimensions, randomGeneratorPosition, randomGeneratorVelocity);
-        }
+    public BinaryTree(Particle[] particles) {
+        this.particles = particles;
+        dimensions = particles[0].position.length;
+
         double[] posMin = new double[dimensions];
         double[] posMax = new double[dimensions];
+
         for (int i = 0; i < dimensions; i++) {
             posMin[i] = 0;
             posMax[i] = 1;
@@ -112,17 +112,6 @@ public class BinaryTree {
             currentNode.rChild = new Node(rPosMin, rPosMax, rStart, rEnd, currentNode, this);
             buildTree(nextDimension, currentNode.rChild);
         }
-
-        // Going up again. Fill gravity stuff
-        if(currentNode.hasLeft() && currentNode.hasRight()){
-            //do something when going up
-        }
-        else if(currentNode.hasRight()){
-            //do smth when rightChild
-        }
-        else{
-            //do smth when leftChild
-        }
     }
 
     public int dimensions() {
@@ -149,10 +138,12 @@ public class BinaryTree {
      * @param g Graphic from JPanel in which to paint.
      * @param scale Scale for drawing.
      */
+    /**
     public void paint(Graphics g, double scale) {
         root.paint(g, scale);
         g.setColor(Color.BLUE);
     }
+     /**
 
     /**
      * Calculates minimal radius squared including the k nearest neighbours.
@@ -161,12 +152,18 @@ public class BinaryTree {
      * @return Minimal radius squared.
      */
     IFixedPriorityQueue kNearestNeighbours(double[] pos, int k) {
-        IFixedPriorityQueue queue = new LinearFixedPriorityQueue(k);
+        IFixedPriorityQueue queue = new FixedPriorityQueue(k);
         kNearestNeighbours(pos, k, root, queue);
         return queue;
     }
 
-    void kNearestNeighbours(double[] pos, int k, Node currentNode, IFixedPriorityQueue queue) {
+    public int[] getIndiceskNearestNeighbours(double[] pos, int k) {
+        IFixedPriorityQueue queue = new FixedPriorityQueue(k);
+        kNearestNeighbours(pos, k, root, queue);
+        return queue.indices();
+    }
+
+    public void kNearestNeighbours(double[] pos, int k, Node currentNode, IFixedPriorityQueue queue) {
 
         if (currentNode.isLeaf()) {
             for (int i = currentNode.start; i <= currentNode.end; i++) {

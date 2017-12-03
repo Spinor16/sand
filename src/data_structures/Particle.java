@@ -1,25 +1,27 @@
 package data_structures;
 
-import calc.VectorCalculus;
 import utils.Drawing;
+
+import java.awt.Color;
 
 import java.awt.*;
 
-public class Particle {
+public class Particle implements CollisionPartner{
     public double[] position;
     public double[] velocity;
 
     public final double mass;
     public final double radius;
     public int index;
-    private double speedFactor;
 
+    public int colorIndex;
+    //private double speedFactor;
 
     public Particle(double[] position, double[] velocity) {
         //mass
         this.mass = 1;
 
-        this.radius = 1;
+        this.radius = 0.01;
 
         //position
         this.position = position;
@@ -29,11 +31,24 @@ public class Particle {
 
     }
 
-
     int dimensions() { return position.length; }
 
     public double mass() { return mass; }
 
+    public double position(int i) { return position[i]; }
+
+    public double velocity(int i) { return velocity[i]; }
+
+    public void setColorIndex(int colorIndex) {
+        this.colorIndex = colorIndex;
+    }
+
+    //distance_squared between own position and vector2
+    public double dist2(double[] vector2){
+        return dist2(this.position, vector2);
+    }
+
+    //distance between two vectors
     public double dist2(double[] vector1, double[] vector2) {
         double norm2 = 0;
         for (int i = 0; i < vector1.length; i++) {
@@ -42,47 +57,15 @@ public class Particle {
         return norm2;
     }
 
-    /**
-    public double[] position() {
-        return position.clone();
-    }
-    public double[] velocity() { return velocity.clone(); }
+    public void paint2D(Graphics g, double scale, Rectangle bounds, int nParticles) {
+        Rectangle scaledValues = Drawing.transform2D(position[0], position[1], 2*radius, 2*radius, scale, bounds, true);
 
-    public double position(int i) { return position[i]; }
-    public double velocity(int i) { return velocity[i]; }
+        //color coupled to index, probably not optimal
+        Color myColor = new Color((int)((double)colorIndex/nParticles*155), (int)((double)colorIndex/nParticles*205),(int)((double)colorIndex/nParticles*255));
+        g.setColor(myColor);
 
-    public void addPosition(int i, double position) {
-        this.position[i] += position;
-    }
+        if(colorIndex==0){g.setColor(Color.RED);}
 
-    public void addVelocity(double[] velocity) {
-        for (int i = 0; i < velocity.length; i++) {
-            this.velocity[i] += velocity[i];
-        }
-    }
-    **/
-    /**
-     * Apply a force over a time interval dt.
-     * @param force
-     * @param dt
-     */
-    /**
-    public void applyForce(double[] force, double dt) {
-        for (int i = 0; i < force.length; i++) {
-            this.velocity[i] += force[i] * dt;
-        }
-    }
-    **/
-
-    void paint2D(Graphics g, double scale, int size) {
-        Rectangle scaledValues = Drawing.transform2D(
-                position[0],
-                position[1],
-                size/scale,
-                size/scale,
-                scale,
-                true
-        );
-        g.fillRect(scaledValues.x, scaledValues.y, scaledValues.width, scaledValues.height);
+        g.fillOval(scaledValues.x , scaledValues.y, scaledValues.width, scaledValues.height);
     }
 }

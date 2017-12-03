@@ -1,6 +1,5 @@
 package data_structures;
 
-import data_structures.CollisionEvent;
 import exceptions.HeapException;
 import utils.Array;
 import utils.IO;
@@ -9,26 +8,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Collision Heap can contain N^2 number of CollisionEvents which have to corespond to N different particles,
- * i.e. the indices i and j of the events cannot be bigger than N.
- */
 public class CollisionHeap {
 
     private List<CollisionEvent> events;
     private final int[][] indexMap;
     private int heapSize = 0;
     int maxSize;
+    private int N;
+    private int M;
 
     /**
      * Constructor
-     * @param N Square root of maximal size of data_structures.CollisionHeap, i.e. the square root of total number of collisions.
+     * @param N Square root of maximal size of data_structures.SymmetricCollisionHeap, i.e. the square root of total number of collisions.
      */
-    public CollisionHeap(int N) {
+    public CollisionHeap(int N, int M) {
+        this.N = N;
+        this.M = M;
         events = new ArrayList<CollisionEvent>(N+1);
         events.add(null); // First element of arraylist is not used.
-        indexMap = new int[N][N];
-        maxSize = N*N;
+        indexMap = new int[N][M];
+        maxSize = M*N;
     }
 
     public void insert(CollisionEvent event) throws HeapException {
@@ -44,7 +43,7 @@ public class CollisionHeap {
             catch (IndexOutOfBoundsException e) {
                 throw new IndexOutOfBoundsException(
                         "Indices (i,j)=(" + event.i() + "," + event.j() + ") of event might be bigger than max index "
-                        + (maxSize-1) + " of heap."
+                                + (maxSize-1) + " of heap."
                 );
             }
             siftUp(heapSize);
@@ -60,11 +59,11 @@ public class CollisionHeap {
     }
 
     public CollisionEvent removeMin() throws HeapException {
-        // FixMe: Could be optimized, because some asumptions can be made for remove(1) that then don't have to be checked in remove().
+        // FixMe: Could be optimized, because some asumptions can be made for remove(1) that then don'normal have to be checked in remove().
         return remove(1);
     }
 
-    private CollisionEvent remove(int nodeIndex) throws HeapException {
+    public CollisionEvent remove(int nodeIndex) throws HeapException {
         CollisionEvent deletedEvent, swappedEvent;
         int parentIndex = parentIndex(nodeIndex);
         if (isEmpty()) {
@@ -73,14 +72,24 @@ public class CollisionHeap {
         else if (nodeIndex > heapSize || nodeIndex <= 0) {
             throw new HeapException("Node with index " + nodeIndex + " does not exist");
         }
+        else if (heapSize == nodeIndex){
+            deletedEvent = events.get(nodeIndex);
+            indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
+            events.remove(heapSize);
+            heapSize--;
+        }
         else {
             deletedEvent = events.get(nodeIndex);
             swappedEvent = events.get(heapSize);
             events.set(nodeIndex, swappedEvent);
+            events.remove(heapSize);
+            heapSize--;
+
             indexMap[deletedEvent.i()][deletedEvent.j()] = 0;
             indexMap[swappedEvent.i()][swappedEvent.j()] = nodeIndex;
-            heapSize--;
+
             if (heapSize > 0) {
+
                 if (nodeIndex > 1 && events.get(nodeIndex).compareTo(events.get(parentIndex)) < 0) {
                     siftUp(nodeIndex);
                 }
@@ -93,23 +102,25 @@ public class CollisionHeap {
     }
 
     /**
-     * Removes events containing index from heap and returns them.
-     * @param index CollisionEvents containing index will be removed.
+     * Removes events in column index from heap and returns them.
+     * @param index index of column that will be removed.
      * @param events Removed CollisionEvents will be gathered in this array.
      * @throws HeapException
      */
-    public void removeEventsContainingIndexSE(int index, ArrayList<CollisionEvent> events) throws HeapException {
-        // Remove column where j=index.
-        for (int i = 0; i < index; i++) {
-            if (indexMap[i][index] != 0) {
-                events.add(remove(indexMap[i][index]));
-            }
-        }
-
+    public void removeEventsInRowSE(int index, ArrayList<CollisionEvent> events) throws HeapException {
         // Remove row where i=index.
-        for (int j = index + 1; j < indexMap.length; j++) {
+        for (int j = 0; j < M; j++) {
             if (indexMap[index][j] != 0) {
                 events.add(remove(indexMap[index][j]));
+            }
+        }
+    }
+
+    public void removeEventsInColSE(int index, ArrayList<CollisionEvent> events) throws HeapException {
+        // Remove col where i=index.
+        for (int i = 0; i < N; i++) {
+            if (indexMap[i][index] != 0) {
+                events.add(remove(indexMap[i][index]));
             }
         }
     }
@@ -177,4 +188,5 @@ public class CollisionHeap {
     public String toString() {
         return IO.toString(events.toArray(), 1, events.size());
     }
+
 }
