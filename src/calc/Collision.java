@@ -122,8 +122,9 @@ public class Collision {
      */
     public static void resolveCollision(Particle particle1, Particle particle2, double collisionTime){
 
-        double[] n = temp2;
+        double[] n = temp2; //normed DX
         double[] DV = temp3;
+        double dist;
 
         // Calculate position of collision for particle1 and particle2
         // set positions to the collision positions
@@ -139,7 +140,12 @@ public class Collision {
 
         //Calculate direction, unit vector connecting ball centers
         VectorCalculus.minus(n,particle1.position,particle2.position);
-        VectorCalculus.divideSE(VectorCalculus.norm(n),n);
+        double norm = VectorCalculus.norm(n);
+        VectorCalculus.divideSE(norm,n);
+
+        //Calculate distance between particle surfaces
+        dist = norm-particle1.radius-particle2.radius;
+
 
         //Calculate Energy
         double energy = 0.5 * (particle1.mass * VectorCalculus.norm2(particle1.velocity)
@@ -160,6 +166,16 @@ public class Collision {
         //Calculate new velocity particle 2
         VectorCalculus.minusSE(particle2.velocity, VectorCalculus.mult(temp,collisionMomentum / particle2.mass, n));
 
+
+        //check if particle overlaps with particle
+        //if yes, shift particle perpendicularly to boundary by a distance dist
+        //and return collisionTime = 0 so no collision is processed before this one
+        if (dist < 0){
+            double dv = VectorCalculus.norm(DV);
+            VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,dist / dv, n));
+            IO.print(dist);
+        }
+
         //Project back velocities
         VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
         VectorCalculus.minusSE(particle2.velocity,VectorCalculus.mult(temp,collisionTime,g));
@@ -170,6 +186,7 @@ public class Collision {
 
         VectorCalculus.minusSE(particle2.position,VectorCalculus.mult(temp,collisionTime,particle2.velocity));
         VectorCalculus.minusSE(particle2.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
+
 
 
 
