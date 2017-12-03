@@ -68,6 +68,7 @@ public class Particle implements CollisionPartner{
 
         if(colorIndex==0){g.setColor(Color.RED);}
 
+        IO.print(height);
         g.fillOval(scaledValues.x , height - scaledValues.y, scaledValues.width, scaledValues.height);
     }
 }

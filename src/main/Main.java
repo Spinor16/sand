@@ -37,11 +37,11 @@ public class Main extends JPanel{
         //Settings
 //        int nParticles = 50;
 //        int nBoundaries = 2;
-        int nNearestNeighbours = 240;
+        int nNearestNeighbours = 150;
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(240,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(150,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);

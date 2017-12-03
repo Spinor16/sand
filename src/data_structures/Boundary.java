@@ -2,6 +2,7 @@ package data_structures;
 
 import calc.VectorCalculus;
 import utils.Drawing;
+import utils.IO;
 
 import java.awt.*;
 
@@ -33,8 +34,7 @@ public class Boundary implements CollisionPartner{
         double y2 = (x2 - position[0])*slope+position[1];
         Rectangle rect = Drawing.transform2D(x1, y1, width,y2-y1, scale, false);
 
+        IO.print(windowHeight);
         g.drawLine(rect.x,windowHeight-rect.y, rect.x + rect.width,windowHeight-(rect.y + rect.height));
     }
-
-
 }

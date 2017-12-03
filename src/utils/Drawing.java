@@ -21,7 +21,7 @@ public class Drawing {
         // Center values about x, y
         if (center) {
             x -= width/2;
-            y -= height/2;
+            y += height/2;
         }
 
         // Scale values

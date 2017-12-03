@@ -40,10 +40,14 @@ public class Collision {
         //distance squared between particle centers when colliding
         double dist2 = Math.pow(particle1.radius + particle2.radius,2);
 
+
         double a = 0.5 * VectorCalculus.dot(DV,DV);
         double b = VectorCalculus.dot(DX,DV);
         double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
 
+//        if(c<0){
+//            c = 0;
+//        }
         //fixme: check if in allowed region: no particle overlapping
         return VectorCalculus.sqrt(a, b, c);
 
@@ -173,7 +177,6 @@ public class Collision {
         if (dist < 0){
             double dv = VectorCalculus.norm(DV);
             VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,dist / dv, n));
-            IO.print(dist);
         }
 
         //Project back velocities
