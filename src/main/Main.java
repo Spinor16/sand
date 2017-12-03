@@ -26,7 +26,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.0005,200);
+        main.run(0.0015,200);
 
     }
 
@@ -312,13 +312,13 @@ public class Main extends JPanel{
             //Draw Particles
             //g.setColor(Color.BLACK);
             for (Particle particle : particles) {
-                particle.paint2D(g, scale, bounds.height, particles.length);
+                particle.paint2D(g, scale, bounds, particles.length);
             }
 
             //Draw Boundaries
             g.setColor(Color.PINK);
             for (Boundary boundary: boundaries){
-                boundary.paint2D(g,1,1,scale);
+                boundary.paint2D(g,1,1, scale, bounds);
             }
         }
     }
