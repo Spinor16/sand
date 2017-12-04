@@ -31,7 +31,7 @@ class SymmetricCollisionHeapTest {
             while (i == j) {
                 j = ((int) (random.nextDouble() * (nParticles)));
             }
-            heap.insert(new CollisionEvent(random.nextDouble(), i, j));
+            heap.insert(new CollisionEvent(0.5 - random.nextDouble(), i, j));
         }
     }
 
