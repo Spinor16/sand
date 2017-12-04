@@ -33,7 +33,7 @@ public class Collision {
 
         //if DV is 0 there is no collision
         if (VectorCalculus.norm2(DV) == 0){
-            return -1;
+            return Double.NEGATIVE_INFINITY;
         }
 
         VectorCalculus.minus(DX,particle1.position,particle2.position);

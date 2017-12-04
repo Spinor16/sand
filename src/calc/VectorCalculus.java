@@ -167,7 +167,6 @@ public class VectorCalculus {
     }
 
     public static double sqrt(double a, double b, double c) {
-        final double epsilon = 0;
         double result;
         double discriminant = b * b - 4 * a * c;
 
@@ -186,7 +185,7 @@ public class VectorCalculus {
         else{
             result = Math.max(collisionTime, collisionTime2);
         }
-        return result*(1-epsilon);
+        return result;
     }
 
 }
