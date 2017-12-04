@@ -13,11 +13,11 @@ public class Drawing {
     }
 
 
-    public static Rectangle transform2D(double x, double y, double width, double height, double scale) {
-        return transform2D(x, y, width, height, scale, false);
+    public static Rectangle transform2D(double x, double y, double width, double height, Rectangle bounds, double scale) {
+        return transform2D(x, y, width, height, scale, bounds, false);
     }
 
-    public static Rectangle transform2D(double x, double y, double width, double height, double scale, boolean center) {
+    public static Rectangle transform2D(double x, double y, double width, double height, double scale, Rectangle bounds, boolean center) {
         // Center values about x, y
         if (center) {
             x -= width/2;
@@ -30,6 +30,6 @@ public class Drawing {
         int widthScaled = (int) Math.round(width * scale);
         int heightScaled = (int) Math.round(height * scale);
 
-        return new Rectangle(xScaled, yScaled, widthScaled, heightScaled);
+        return new Rectangle(xScaled, bounds.height - yScaled, widthScaled, heightScaled);
     }
 }

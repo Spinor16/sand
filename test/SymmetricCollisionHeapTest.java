@@ -68,7 +68,7 @@ class SymmetricCollisionHeapTest {
         // Remove some random nodes from heap.
         int counter = 0;
         ArrayList<CollisionEvent> events = new ArrayList<>();
-        for (int _ = 0; _ < nEvents / 2; _++) {
+        for (int _ = 0; _ < nParticles / 2; _++) {
             int i = ((int) (random.nextDouble() * (nParticles)));
             try {
                 heap.removeEventsContainingIndexSE(i,events);
