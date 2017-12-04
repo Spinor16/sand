@@ -173,10 +173,10 @@ public class VectorCalculus {
         if (discriminant < 0){
             return -1;
         }
-        double q = -(b + Math.copySign(Math.sqrt(discriminant),c));
+        double q = -0.5*(b + Math.copySign(Math.sqrt(discriminant), b));
 
-        double collisionTime = q / 2 / a;
-        double collisionTime2 = 2 * c / q;
+        double collisionTime = q / a;
+        double collisionTime2 = c / q;
         double min = Math.min(collisionTime, collisionTime2);
 
         if(min > 0 || overlap){
