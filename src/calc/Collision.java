@@ -2,11 +2,12 @@ package calc;
 
 import data_structures.Boundary;
 import data_structures.Particle;
+import main.Main;
 import utils.IO;
 
 public class Collision {
     private static double[] g = {0, -9.81};
-    private static double COR = 0.1;
+    private static double COR = 0.5;
     private static double[] temp = new double[]{0,0};
     private static double[] temp2 = new double[]{0,0};
     private static double[] temp3 = new double[]{0,0};
@@ -102,10 +103,13 @@ public class Collision {
         //check if particle overlaps with boundary
         //if yes, shift particle perpendicularly to boundary by a distance dist
         //and return collisionTime = 0 so no collision is processed before this one
-        if (c > 0){
-            VectorCalculus.minusSE(particle.position,VectorCalculus.mult(c,boundary.normal));
-            return 0;
-        }
+//        if (c > 0){
+//            VectorCalculus.minusSE(particle.position,VectorCalculus.mult(c,boundary.normal));
+//
+//            //VectorCalculus.minusSE(particle.velocity, VectorCalculus.mult(2*VectorCalculus.norm(particle.velocity),boundary.normal));
+//            //Main.updatePB(particle.index, );
+//            return 0;
+//        }
         return VectorCalculus.sqrt(a, b, c);
     }
 

@@ -16,6 +16,9 @@ public class Main extends JPanel{
     static Boundary[] boundaries;
     static boolean paint = false;
 
+    static public SymmetricCollisionHeap heapPP;
+    static public CollisionHeap heapPB;
+
     public static void main(String[] args) {
 
 
@@ -26,7 +29,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.0015,200);
+        main.run(0.0005,200);
 
     }
 
@@ -37,11 +40,11 @@ public class Main extends JPanel{
         //Settings
 //        int nParticles = 50;
 //        int nBoundaries = 2;
-        int nNearestNeighbours = 150;
+        int nNearestNeighbours = 70;
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(150,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(70,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -58,8 +61,8 @@ public class Main extends JPanel{
 
         while(time<endTime){
 
-            SymmetricCollisionHeap heapPP = new SymmetricCollisionHeap(particles.length);
-            CollisionHeap heapPB = new CollisionHeap(particles.length,boundaries.length);
+            heapPP = new SymmetricCollisionHeap(particles.length);
+            heapPB = new CollisionHeap(particles.length,boundaries.length);
 
 
             //Look for nearestNeighbours
@@ -229,7 +232,7 @@ public class Main extends JPanel{
         }
     }
 
-    private void updatePP(int pUpdateIndex, CollisionEvent minEvent, SymmetricCollisionHeap heap,
+    public static void updatePP(int pUpdateIndex, CollisionEvent minEvent, SymmetricCollisionHeap heap,
                           int[] nearestNeighbours, ArrayList<CollisionEvent> events, boolean isSameCollisionType)
                                             throws HeapException {
 
@@ -253,7 +256,7 @@ public class Main extends JPanel{
         }
     }
 
-    private void updatePB(int pUpdateIndex, CollisionEvent minEvent, CollisionHeap heap,
+    public static void updatePB(int pUpdateIndex, CollisionEvent minEvent, CollisionHeap heap,
                           ArrayList<CollisionEvent> events, boolean isSameCollisionType) throws HeapException {
 
         for (int boundaryIndex = 0; boundaryIndex < boundaries.length; boundaryIndex++) {
@@ -273,7 +276,7 @@ public class Main extends JPanel{
         }
     }
 
-    private void resetAndInsert(int i,  int j, CollisionHeap heap,
+    private static void resetAndInsert(int i,  int j, CollisionHeap heap,
                                 ArrayList<CollisionEvent> events, double collisionTime) throws HeapException {
 
 

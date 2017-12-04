@@ -167,7 +167,8 @@ public class VectorCalculus {
     }
 
     public static double sqrt(double a, double b, double c) {
-
+        final double epsilon = 0;
+        double result;
         double discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0){
@@ -180,11 +181,12 @@ public class VectorCalculus {
         double min = Math.min(collisionTime, collisionTime2);
 
         if(min>0){
-            return min;
+            result = min;
         }
         else{
-            return Math.max(collisionTime, collisionTime2);
+            result = Math.max(collisionTime, collisionTime2);
         }
+        return result*(1-epsilon);
     }
 
 }
