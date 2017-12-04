@@ -2,8 +2,6 @@ package calc;
 
 import data_structures.Boundary;
 import data_structures.Particle;
-import main.Main;
-import utils.IO;
 
 public class Collision {
     private static double[] g = {0, -9.81};
@@ -39,18 +37,15 @@ public class Collision {
         VectorCalculus.minus(DX,particle1.position,particle2.position);
 
         //distance squared between particle centers when colliding
-        double dist2 = Math.pow(particle1.radius + particle2.radius,2);
+        double dist2 = Math.pow(particle1.radius + particle2.radius, 2);
 
 
         double a = 0.5 * VectorCalculus.dot(DV,DV);
         double b = VectorCalculus.dot(DX,DV);
         double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
 
-//        if(c<0){
-//            c = 0;
-//        }
         //fixme: check if in allowed region: no particle overlapping
-        return VectorCalculus.sqrt(a, b, c);
+        return VectorCalculus.sqrt(a, b, c, c < 0);
 
         //double collisionTime = - (Math.sqrt(discriminant) + VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
 
@@ -110,7 +105,7 @@ public class Collision {
 //            //Main.updatePB(particle.index, );
 //            return 0;
 //        }
-        return VectorCalculus.sqrt(a, b, c);
+        return VectorCalculus.sqrt(a, b, c, dist < 0);
     }
 
     /**
@@ -247,15 +242,6 @@ public class Collision {
         //Project back position
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,collisionTime,particle.velocity));
         VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
-    }
-
-    public static void resolveCollision(Particle particle1, Particle particle2){
-        resolveCollision(particle1, particle2, findCollisionTime(particle1, particle2));
-    }
-
-
-    public static void resolveCollision(Particle particle, Boundary boundary){
-        resolveCollision(particle, boundary, findCollisionTime(particle, boundary));
     }
 
     public static void projectForwardParticle(Particle particle, double timeStep){

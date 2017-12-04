@@ -166,7 +166,7 @@ public class VectorCalculus {
         return ret;
     }
 
-    public static double sqrt(double a, double b, double c) {
+    public static double sqrt(double a, double b, double c, boolean overlap) {
         double result;
         double discriminant = b * b - 4 * a * c;
 
@@ -179,7 +179,7 @@ public class VectorCalculus {
         double collisionTime2 = 2 * c / q;
         double min = Math.min(collisionTime, collisionTime2);
 
-        if(min>0){
+        if(min > 0 || overlap){
             result = min;
         }
         else{

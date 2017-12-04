@@ -101,7 +101,7 @@ public class Main extends JPanel{
             for (Particle particle : particles) {
                 for (int j = 0; j < boundaries.length; j++) {
                     collisionTime = Collision.findCollisionTime(particle, boundaries[j]);
-                    if (collisionTime >= 0) {
+                    if (collisionTime > Double.NEGATIVE_INFINITY) {
                         try {
                             heapPB.insert(
                                     new CollisionEvent(
@@ -270,7 +270,7 @@ public class Main extends JPanel{
 
             //check if the collision happens after minTime, i.e. if *real* collision
             //implicitly check whether time is positive
-            if (collisionTime >= minEvent.t()) {
+            if (collisionTime >= minEvent.t() ) {
                 resetAndInsert(pUpdateIndex, boundaryIndex, heap, events, collisionTime);
             }
         }
