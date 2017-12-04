@@ -204,12 +204,12 @@ public class Main extends JPanel{
 
             //project forward particles
             for (int i = 0; i < particles.length; i++) {
-                Collision.projectForwardParticle(particles[i], timeStep);
+                Collision.projectParticle(particles[i], timeStep);
             }
 
             //project forward boundaries
             for (int i = 0; i < boundaries.length; i++) {
-                Collision.projectForwardBoundary(boundaries[i], timeStep);
+                Collision.projectBoundary(boundaries[i], timeStep);
             }
 
             tree.buildTree(tree.root);

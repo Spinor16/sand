@@ -95,14 +95,11 @@ public class Collision {
         double b = DVn;
         double c = - dist;
 
-        //check if particle overlaps with boundary
-        //if yes, shift particle perpendicularly to boundary by a distance dist
-        //and return collisionTime = 0 so no collision is processed before this one
+//        //check if particle overlaps with boundary
+//        //if yes, shift particle perpendicularly to boundary by a distance dist
+//        //and return collisionTime = 0 so no collision is processed before this one
 //        if (c > 0){
 //            VectorCalculus.minusSE(particle.position,VectorCalculus.mult(c,boundary.normal));
-//
-//            //VectorCalculus.minusSE(particle.velocity, VectorCalculus.mult(2*VectorCalculus.norm(particle.velocity),boundary.normal));
-//            //Main.updatePB(particle.index, );
 //            return 0;
 //        }
         return VectorCalculus.sqrt(a, b, c, dist < 0);
@@ -124,74 +121,13 @@ public class Collision {
      *
      */
     public static void resolveCollision(Particle particle1, Particle particle2, double collisionTime){
+        projectParticle(particle1, collisionTime);
+        projectParticle(particle2, collisionTime);
 
-        double[] n = temp2; //normed DX
-        double[] DV = temp3;
-        double dist;
+        collide(particle1, particle2);
 
-        // Calculate position of collision for particle1 and particle2
-        // set positions to the collision positions
-        VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,collisionTime, particle1.velocity));
-        VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
-
-        VectorCalculus.plusSE(particle2.position, VectorCalculus.mult(temp,collisionTime, particle2.velocity));
-        VectorCalculus.plusSE(particle2.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
-
-        //Calculate velocity at collision position
-        VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp,collisionTime,g));
-        VectorCalculus.plusSE(particle2.velocity, VectorCalculus.mult(temp,collisionTime,g));
-
-        //Calculate direction, unit vector connecting ball centers
-        VectorCalculus.minus(n,particle1.position,particle2.position);
-        double norm = VectorCalculus.norm(n);
-        VectorCalculus.divideSE(norm,n);
-
-        //Calculate distance between particle surfaces
-        dist = norm-particle1.radius-particle2.radius;
-
-
-        //Calculate Energy
-        double energy = 0.5 * (particle1.mass * VectorCalculus.norm2(particle1.velocity)
-                        + particle2.mass * VectorCalculus.norm2(particle2.velocity));
-
-        //Calculate DV
-        VectorCalculus.minus(DV,particle1.velocity,particle2.velocity);
-
-        //For convenience calculate in advance
-        double mass_term = (1/particle1.mass + 1/particle2.mass);
-        double dot = VectorCalculus.dot(n,DV) / 2. / mass_term;
-        double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
-
-
-        //Calculate new velocity particle 1
-        VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp, collisionMomentum / particle1.mass, n));
-
-        //Calculate new velocity particle 2
-        VectorCalculus.minusSE(particle2.velocity, VectorCalculus.mult(temp,collisionMomentum / particle2.mass, n));
-
-
-        //check if particle overlaps with particle
-        //if yes, shift particle perpendicularly to boundary by a distance dist
-        //and return collisionTime = 0 so no collision is processed before this one
-        if (dist < 0){
-            double dv = VectorCalculus.norm(DV);
-            VectorCalculus.plusSE(particle1.position, VectorCalculus.mult(temp,dist / dv, n));
-        }
-
-        //Project back velocities
-        VectorCalculus.minusSE(particle1.velocity,VectorCalculus.mult(temp,collisionTime,g));
-        VectorCalculus.minusSE(particle2.velocity,VectorCalculus.mult(temp,collisionTime,g));
-
-        //Project back positions
-        VectorCalculus.minusSE(particle1.position,VectorCalculus.mult(temp,collisionTime,particle1.velocity));
-        VectorCalculus.minusSE(particle1.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
-
-        VectorCalculus.minusSE(particle2.position,VectorCalculus.mult(temp,collisionTime,particle2.velocity));
-        VectorCalculus.minusSE(particle2.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
-
-
-
-
+        projectParticle(particle1, -collisionTime);
+        projectParticle(particle2, -collisionTime);
     }
 
     /**
@@ -208,16 +144,42 @@ public class Collision {
      *
      */
     public static void resolveCollision(Particle particle, Boundary boundary, double collisionTime){
+        projectParticle(particle, collisionTime);
+        collide(particle, boundary);
+        projectParticle(particle, -collisionTime);
+    }
 
+    private static void collide(Particle particle1, Particle particle2) {
+        double[] n = temp2; //normed DX
+        double[] DV = temp3;
+
+        //Calculate direction, unit vector connecting ball centers
+        VectorCalculus.minus(n,particle1.position,particle2.position);
+        double norm = VectorCalculus.norm(n);
+        VectorCalculus.divideSE(norm,n);
+
+        //Calculate Energy
+        double energy = 0.5 * (particle1.mass * VectorCalculus.norm2(particle1.velocity)
+                        + particle2.mass * VectorCalculus.norm2(particle2.velocity));
+
+        //Calculate DV
+        VectorCalculus.minus(DV,particle1.velocity,particle2.velocity);
+
+        //For convenience calculate in advance
+        double mass_term = (1/particle1.mass + 1/particle2.mass);
+        double dot = VectorCalculus.dot(n,DV) / 2. / mass_term;
+        double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
+
+        //Calculate new velocity particle 1
+        VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp, collisionMomentum / particle1.mass, n));
+
+        //Calculate new velocity particle 2
+        VectorCalculus.minusSE(particle2.velocity, VectorCalculus.mult(temp,collisionMomentum / particle2.mass, n));
+    }
+
+
+    private static void collide(Particle particle, Boundary boundary) {
         double[] Vt = temp2;
-
-        //Calculate collision position
-        VectorCalculus.plusSE(particle.position, VectorCalculus.mult(temp,collisionTime, particle.velocity));
-        VectorCalculus.plusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime, g));
-
-        //Calculate velocity at collision position
-        VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp,collisionTime, g));
-
         //Calculate tangential component
         VectorCalculus.mult(Vt,VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);
 
@@ -235,25 +197,15 @@ public class Collision {
         particle.velocity = VectorCalculus.divide(VectorCalculus.norm(particle.velocity),particle.velocity);
         //then multiply with energy loss corrected absolute value
         VectorCalculus.multSE(Math.sqrt((1- COR)*vi2), particle.velocity);
-
-        //Project back velocity
-        VectorCalculus.minusSE(particle.velocity,VectorCalculus.mult(temp,collisionTime,g));
-
-        //Project back position
-        VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,collisionTime,particle.velocity));
-        VectorCalculus.minusSE(particle.position,VectorCalculus.mult(temp,0.5*collisionTime*collisionTime,g));
     }
 
-    public static void projectForwardParticle(Particle particle, double timeStep){
-        VectorCalculus.plusSE(particle.position,VectorCalculus.mult(temp,timeStep,particle.velocity));
-        VectorCalculus.plusSE(particle.position,VectorCalculus.mult(temp,0.5*timeStep*timeStep,g));
-
-        VectorCalculus.plusSE(particle.velocity,VectorCalculus.mult(temp,timeStep,g));
-
-
+    public static void projectParticle(Particle particle, double timeStep){
+        VectorCalculus.plusSE(particle.position, VectorCalculus.mult(temp, timeStep, particle.velocity));
+        VectorCalculus.plusSE(particle.position, VectorCalculus.mult(temp,0.5*timeStep*timeStep, g));
+        VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp, timeStep, g));
     }
 
-    public static void projectForwardBoundary(Boundary boundary, double timeStep){
-        VectorCalculus.plusSE(boundary.position,VectorCalculus.mult(temp,timeStep,boundary.velocity(timeStep)));
+    public static void projectBoundary(Boundary boundary, double timeStep){
+        VectorCalculus.plusSE(boundary.position, VectorCalculus.mult(temp, timeStep, boundary.velocity(timeStep)));
     }
 }
