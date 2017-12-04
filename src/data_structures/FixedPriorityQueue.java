@@ -45,6 +45,6 @@ public class FixedPriorityQueue implements IFixedPriorityQueue {
      * @return Array of indices corresponding to indices array in BinaryTree.
      */
     public int[] indices() {
-        return indices.clone();
+        return indices;
     }
 }

@@ -1,9 +1,11 @@
 package data_structures;
 
+import exceptions.TimeException;
+
 /**
  * Contain information about one collision event.
  *
- * t = time at which event happens.
+ * normal = time at which event happens.
  * i = index of first particle involved.
  * j = index of second particle involved.
  *
@@ -16,14 +18,12 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
     /**
      * Constructor
      * @pre i<j
-     * @param t time at which the collision occurs
+     * @param normal time at which the collision occurs
      * @param i index of first colliding particle
      * @param j index of second colliding particle
      */
-    public CollisionEvent(double t, int i, int j) {
-        this.t = t;
-        this.i = i;
-        this.j = j;
+    public CollisionEvent(double t, int i, int j){
+        this.reset(t, i, j);
     }
 
     public double t() { return t; }
@@ -33,11 +33,14 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
     /**
      * Reset attributes.
      * @pre i<j
-     * @param t time at which the collision occurs
+     * @param normal time at which the collision occurs
      * @param i index of first colliding particle
      * @param j index of second colliding particle
      */
-    public void reset(double t, int i, int j) {
+    public void reset(double t, int i, int j){
+        assert t > 0;
+        //assert i < j;
+
         this.t = t;
         this.i = i;
         this.j = j;
