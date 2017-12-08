@@ -4,12 +4,14 @@ import data_structures.Boundary;
 import data_structures.Particle;
 
 public class Collision {
-    private static double[] g = {0, -9.81};
+    public static final double[] g = {0, -9.81};
     private static double COR = 0.5;
     private static double[] temp = new double[]{0,0};
     private static double[] temp2 = new double[]{0,0};
     private static double[] temp3 = new double[]{0,0};
-
+    private static double[] temp4 = new double[]{0,0,0,0,0};
+    private static double[] temp5 = new double[]{0,0};
+    private static final double EPS = 1e-18;
     /**
      *
      * @param particle1
@@ -44,12 +46,32 @@ public class Collision {
         double b = VectorCalculus.dot(DX,DV);
         double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
 
+        double collisionTime = VectorCalculus.sqrt(a, b, c, c < 0);
+//
+//        if ((particle1.isOnBoundary() || particle2.isOnBoundary())){
+//
+//            //fixme: should test for existence of root
+//
+//            double[] coeffs = temp4;
+//            double DG[] = temp5;
+//            VectorCalculus.minus(DG,particle1.gOnBoundary(),particle2.gOnBoundary());
+//
+//            coeffs[0] = VectorCalculus.dot(DG,DG) / 4;
+//
+//            coeffs[1] = VectorCalculus.dot(DG,DV);
+//
+//            coeffs[2] = coeffs[1] + 2 * a;
+//
+//            coeffs[3] = 2 * b;
+//
+//            coeffs[4] = 2 * c;
+//
+//            collisionTime = VectorCalculus.newtonRootsPoly(coeffs,collisionTime,EPS,4);
+//
+//        }
+
         //fixme: check if in allowed region: no particle overlapping
-        return VectorCalculus.sqrt(a, b, c, c < 0);
-
-        //double collisionTime = - (Math.sqrt(discriminant) + VectorCalculus.dot(DV,DX)) / VectorCalculus.norm2(DV);
-
-        //return collisionTime;
+        return collisionTime;
 
     }
 
@@ -76,8 +98,8 @@ public class Collision {
         VectorCalculus.minus(DV,particle.velocity, boundary.velocity);
 
         //Set boundary.normal in same direction as DXn
-        int sign = (int) Math.signum(VectorCalculus.dot(DX,boundary.normal));
-        VectorCalculus.multSE(sign,boundary.normal);
+//        int sign = (int) Math.signum(VectorCalculus.dot(DX,boundary.normal));
+//        VectorCalculus.multSE(sign,boundary.normal);
 
         //Calculate distance to boundary
         double DXn = VectorCalculus.dot(boundary.normal,DX);
@@ -89,19 +111,13 @@ public class Collision {
         double gn = VectorCalculus.dot(boundary.normal,g);
 
         //calculate distance between particle and boundary
-        double dist = DXn - particle.radius;
+//        double dist = DXn - particle.radius;
+        double dist = getDist(particle, boundary);
 
         double a = 0.5 * gn;
         double b = DVn;
         double c = - dist;
 
-//        //check if particle overlaps with boundary
-//        //if yes, shift particle perpendicularly to boundary by a distance dist
-//        //and return collisionTime = 0 so no collision is processed before this one
-//        if (c > 0){
-//            VectorCalculus.minusSE(particle.position,VectorCalculus.mult(c,boundary.normal));
-//            return 0;
-//        }
         return VectorCalculus.sqrt(a, b, c, dist < 0);
     }
 
@@ -153,10 +169,6 @@ public class Collision {
         double[] n = temp2; //normed DX
         double[] DV = temp3;
 
-        if (!particle1.touchingBoundaries.isEmpty()){
-            //different calculation of collision
-        }
-        
         //Calculate direction, unit vector connecting ball centers
         VectorCalculus.minus(n,particle1.position,particle2.position);
         double norm = VectorCalculus.norm(n);
@@ -185,10 +197,6 @@ public class Collision {
     private static void collide(Particle particle, Boundary boundary) {
         double[] Vt = temp2;
 
-        if (!particle.touchingBoundaries.isEmpty()){
-            //don't collide
-        }
-
         //Calculate tangential component
         VectorCalculus.mult(Vt,VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);
 
@@ -210,8 +218,8 @@ public class Collision {
 
     public static void projectParticle(Particle particle, double timeStep){
 
-        if (!particle.touchingBoundaries.isEmpty()){
-            //adapt g
+        if (particle.isOnBoundary()){
+            double[] g = particle.gOnBoundary();
         }
 
         VectorCalculus.plusSE(particle.position, VectorCalculus.mult(temp, timeStep, particle.velocity));
@@ -221,6 +229,48 @@ public class Collision {
 
     public static void projectBoundary(Boundary boundary, double timeStep){
         VectorCalculus.plusSE(boundary.position, VectorCalculus.mult(temp, timeStep, boundary.velocity(timeStep)));
+    }
+
+    public static double getVn(Particle particle, Boundary boundary){
+        double[] DX = temp5;
+
+        double vn = VectorCalculus.dot(particle.velocity,boundary.normal);
+        return vn;
+    }
+
+
+    /**
+     * Calculates the distance between a boundary and the surface of a particle. Assumes boundary.normal is set
+     * outwards, away from the particle.
+     *
+     * @param particle
+     * @param boundary
+     * @return
+     */
+    public static double getDist(Particle particle, Boundary boundary){
+        double[] DX = temp3;
+
+        //Calculate Delta X and Delta V
+        VectorCalculus.minus(DX,boundary.position,particle.position);
+
+        //Set boundary.normal in same direction as DXn
+        double DXn = Math.abs(VectorCalculus.dot(boundary.normal,DX));
+        int sign = (int) Math.signum(DXn);
+//        boundary.switchNormalSignTo(sign);
+
+        //calculate distance between particle and boundary
+        if (DXn > particle.radius && sign > 0){
+            return DXn - particle.radius;
+        }
+        else if (DXn < particle.radius && sign > 0){
+            return particle.radius - DXn;
+        }
+        else if (sign * DXn < particle.radius && sign < 0){
+            return -(DXn + particle.radius);
+        }
+        else{ //if (sign * DXn > particle.radius && sign < 0){
+            return DXn + particle.radius;
+        }
     }
 
 }

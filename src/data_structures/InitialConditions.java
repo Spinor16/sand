@@ -110,7 +110,7 @@ public class InitialConditions extends JPanel {
 
         double[] rWallVelocity = {0,0};
         double[] rWallPosition = lWallPosition;
-        double[] rWallDirection = {-Math.cos(angle), Math.sin(angle)};
+        double[] rWallDirection = {Math.cos(angle), -Math.sin(angle)};
 
 //        VectorCalculus.plusSE(rWallPosition,VectorCalculus.mult(0.3,rWallDirection));
         lowerWallR = new Boundary(rWallVelocity, rWallPosition, rWallDirection);

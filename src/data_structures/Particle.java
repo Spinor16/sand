@@ -1,5 +1,7 @@
 package data_structures;
 
+import calc.Collision;
+import calc.VectorCalculus;
 import utils.Drawing;
 
 import java.awt.Color;
@@ -16,9 +18,10 @@ public class Particle implements CollisionPartner{
     public int index;
 
     public int colorIndex;
-    //private double speedFactor;
-    public ArrayList<Boundary> touchingBoundaries;
 
+    public ArrayList<Boundary> touchingBoundaries = new ArrayList<>();
+
+    private double[] temp = new double[]{0,0};
 
     public Particle(double[] position, double[] velocity) {
         //mass
@@ -73,15 +76,39 @@ public class Particle implements CollisionPartner{
     }
 
     public boolean checkIfOnBoundary(Boundary boundary){
-        return true;
+        double dist = Collision.getDist(this, boundary);
+        double vn = Collision.getVn(this, boundary);
+        if (dist<0){
+            VectorCalculus.minusSE(velocity, VectorCalculus.mult(temp, 2 * vn, boundary.normal));
+            return true;
+        }
+        else{
+            return false;
+        }
+//        return false;
+    }
+
+    public boolean isOnBoundary(){
+        return !touchingBoundaries.isEmpty();
     }
 
     public void setTouchingBoundary(Boundary boundary){
-        if (!touchingBoundaries.contains(boundary)){
+        if (!touchingBoundaries.isEmpty() && !touchingBoundaries.contains(boundary)){
             touchingBoundaries.add(boundary);
         }
         else{
             return;
         }
+    }
+
+    public double[] gOnBoundary(){
+        double[] g = Collision.g.clone();
+        if (isOnBoundary()){
+            for (Boundary boundary : touchingBoundaries) {
+                VectorCalculus.plusSE(g, VectorCalculus.mult(temp, - VectorCalculus.dot(g,boundary.normal),boundary.normal));
+            }
+
+        }
+        return g;
     }
 }
