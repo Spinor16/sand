@@ -153,6 +153,10 @@ public class Collision {
         double[] n = temp2; //normed DX
         double[] DV = temp3;
 
+        if (!particle1.touchingBoundaries.isEmpty()){
+            //different calculation of collision
+        }
+        
         //Calculate direction, unit vector connecting ball centers
         VectorCalculus.minus(n,particle1.position,particle2.position);
         double norm = VectorCalculus.norm(n);
@@ -180,6 +184,11 @@ public class Collision {
 
     private static void collide(Particle particle, Boundary boundary) {
         double[] Vt = temp2;
+
+        if (!particle.touchingBoundaries.isEmpty()){
+            //don't collide
+        }
+
         //Calculate tangential component
         VectorCalculus.mult(Vt,VectorCalculus.dot(boundary.direction,particle.velocity),boundary.direction);
 
@@ -200,6 +209,11 @@ public class Collision {
     }
 
     public static void projectParticle(Particle particle, double timeStep){
+
+        if (!particle.touchingBoundaries.isEmpty()){
+            //adapt g
+        }
+
         VectorCalculus.plusSE(particle.position, VectorCalculus.mult(temp, timeStep, particle.velocity));
         VectorCalculus.plusSE(particle.position, VectorCalculus.mult(temp,0.5*timeStep*timeStep, g));
         VectorCalculus.plusSE(particle.velocity, VectorCalculus.mult(temp, timeStep, g));
@@ -208,4 +222,5 @@ public class Collision {
     public static void projectBoundary(Boundary boundary, double timeStep){
         VectorCalculus.plusSE(boundary.position, VectorCalculus.mult(temp, timeStep, boundary.velocity(timeStep)));
     }
+
 }

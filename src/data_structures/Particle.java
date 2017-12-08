@@ -5,6 +5,7 @@ import utils.Drawing;
 import java.awt.Color;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Particle implements CollisionPartner{
     public double[] position;
@@ -16,6 +17,8 @@ public class Particle implements CollisionPartner{
 
     public int colorIndex;
     //private double speedFactor;
+    public ArrayList<Boundary> touchingBoundaries;
+
 
     public Particle(double[] position, double[] velocity) {
         //mass
@@ -67,5 +70,18 @@ public class Particle implements CollisionPartner{
         if(colorIndex==0){g.setColor(Color.RED);}
 
         g.fillOval(scaledValues.x , scaledValues.y, scaledValues.width, scaledValues.height);
+    }
+
+    public boolean checkIfOnBoundary(Boundary boundary){
+        return true;
+    }
+
+    public void setTouchingBoundary(Boundary boundary){
+        if (!touchingBoundaries.contains(boundary)){
+            touchingBoundaries.add(boundary);
+        }
+        else{
+            return;
+        }
     }
 }

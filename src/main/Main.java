@@ -71,6 +71,15 @@ public class Main extends JPanel{
                 nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,nNearestNeighbours);
             }
 
+            //Look for touchingBoundaries
+            for (Particle particle  : particles) {
+                for (Boundary boundary : boundaries) {
+                    if (particle.checkIfOnBoundary(boundary)){
+                        particle.setTouchingBoundary(boundary);
+                    }
+                }
+            }
+
 
             //Add CollisionTimes particle - particle
             for (Particle particle : particles) {
