@@ -79,6 +79,7 @@ public class Particle implements CollisionPartner{
         g.setColor(myColor);
 
         if(colorIndex==0){g.setColor(Color.RED);}
+        if(isOnBoundary()){g.setColor(Color.YELLOW);}
 
         g.fillOval(scaledValues.x , scaledValues.y, scaledValues.width, scaledValues.height);
     }
@@ -114,7 +115,7 @@ public class Particle implements CollisionPartner{
         double[] g = Collision.g.clone();
         if (isOnBoundary()){
             for (Boundary boundary : touchingBoundaries) {
-                VectorCalculus.plusSE(g, VectorCalculus.mult(temp, - VectorCalculus.dot(g,boundary.normal),boundary.normal));
+                VectorCalculus.minusSE(g, VectorCalculus.mult(temp, VectorCalculus.dot(g,boundary.normal),boundary.normal));
             }
 
         }
