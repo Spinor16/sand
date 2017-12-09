@@ -2,7 +2,6 @@ package data_structures;
 
 import calc.Collision;
 import calc.VectorCalculus;
-import com.sun.org.apache.bcel.internal.Constants;
 import utils.Drawing;
 
 import java.awt.Color;
@@ -24,8 +23,7 @@ public class Particle implements CollisionPartner{
 
     public int colorIndex;
 
-    public static final double RESTITUTION_VELOCITY = 0.5;
-
+    public static final double RESTITUTION_VELOCITY = 0.1;
 
     public ArrayList<Boundary> touchingBoundaries = new ArrayList<>();
 

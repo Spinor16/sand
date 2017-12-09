@@ -56,7 +56,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
             return 0;
         }
         else {
-            return this.t > other.t ?  1 : -1;
+            return this.t >= other.t ?  1 : -1;
         }
     }
 

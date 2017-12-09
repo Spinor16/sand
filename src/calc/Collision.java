@@ -13,6 +13,8 @@ public class Collision {
     private static double[] temp4 = new double[]{0,0,0,0,0};
     private static double[] temp5 = new double[]{0,0};
     private static final double EPS = 1e-5;
+    private static final double MOM_COEFF = 0.001;
+
     /**
      *
      * @param particle1
@@ -46,6 +48,11 @@ public class Collision {
         double a = 0.5 * VectorCalculus.dot(DV,DV);
         double b = VectorCalculus.dot(DX,DV);
         double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
+
+        if (c < 0){
+            double ret = Main.lastIsOverlap ? Double.NEGATIVE_INFINITY : 0;
+            return ret;
+        }
 
         double collisionTime = VectorCalculus.sqrt(a, b, c, c < 0);
 
@@ -145,10 +152,12 @@ public class Collision {
      *
      */
     public static void resolveCollision(Particle particle1, Particle particle2, double collisionTime){
+
         projectParticle(particle1, collisionTime);
         projectParticle(particle2, collisionTime);
 
-        collide(particle1, particle2);
+
+        collide(particle1, particle2, collisionTime == 0);
 
         //Check touchingBoundaries particle 1
         Main.updateTouchingBoundaries(particle1);
@@ -156,6 +165,7 @@ public class Collision {
         //Check touchingBoundary particle 2
         Main.updateTouchingBoundaries(particle2);
 
+//        collisionTime = overlapping ? particle1.overlap / VectorCalculus.norm(particle1.velocity) : collisionTime;
         projectParticle(particle1, -collisionTime);
         projectParticle(particle2, -collisionTime);
     }
@@ -184,12 +194,12 @@ public class Collision {
         projectParticle(particle, -collisionTime);
     }
 
-    private static void collide(Particle particle1, Particle particle2) {
+    private static void collide(Particle particle1, Particle particle2, boolean overlapping) {
         double[] n = temp2; //normed DX
         double[] DV = temp3;
 
         //Calculate direction, unit vector connecting ball centers
-        VectorCalculus.minus(n,particle1.position,particle2.position);
+        VectorCalculus.minus(n,particle1.position, particle2.position);
         double norm = VectorCalculus.norm(n);
         VectorCalculus.divideSE(norm,n);
 
@@ -198,12 +208,16 @@ public class Collision {
                         + particle2.mass * VectorCalculus.norm2(particle2.velocity));
 
         //Calculate DV
-        VectorCalculus.minus(DV,particle1.velocity,particle2.velocity);
+        VectorCalculus.minus(DV, particle1.velocity, particle2.velocity);
 
         //For convenience calculate in advance
         double mass_term = (1/particle1.mass + 1/particle2.mass);
         double dot = VectorCalculus.dot(n,DV) / 2. / mass_term;
         double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
+
+        if (overlapping){
+            collisionMomentum += Math.max(collisionMomentum, (particle1.mass + particle2.mass) * MOM_COEFF * norm);
+        }
 
         double collisionVelocity1 = collisionMomentum / particle1.mass;
         double collisionVelocity2 = collisionMomentum / particle2.mass;
@@ -213,6 +227,7 @@ public class Collision {
             collisionVelocity1 = Math.max(collisionVelocity1, Particle.RESTITUTION_VELOCITY);
             collisionVelocity2 = Math.max(collisionVelocity2, Particle.RESTITUTION_VELOCITY);
         }
+
 
         //Calculate new velocity particle 1
         VectorCalculus.plusSE(particle1.velocity, VectorCalculus.mult(temp, collisionVelocity1, n));

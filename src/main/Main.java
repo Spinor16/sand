@@ -19,6 +19,8 @@ public class Main extends JPanel{
     static public SymmetricCollisionHeap heapPP;
     static public CollisionHeap heapPB;
 
+    public static boolean lastIsOverlap;
+
     public static void main(String[] args) {
 
 
@@ -81,7 +83,7 @@ public class Main extends JPanel{
                     int NNj = nearestNeighbours[particle.index][j]; // particle index of current nearest neighbour
                     if (particle.index < NNj) {
                         collisionTime = Collision.findCollisionTime(particle, particles[NNj]);
-                        if (collisionTime > 0) {
+                        if (collisionTime >= 0) {
                             try {
                                 heapPP.insert(
                                         new CollisionEvent(
@@ -104,7 +106,7 @@ public class Main extends JPanel{
             for (Particle particle : particles) {
                 for (int j = 0; j < boundaries.length; j++) {
                     collisionTime = Collision.findCollisionTime(particle, boundaries[j]);
-                    if (collisionTime > 0) {
+                    if (collisionTime >= 0) {
                         try {
                             heapPB.insert(
                                     new CollisionEvent(
@@ -141,6 +143,8 @@ public class Main extends JPanel{
                 else if (tMinPP < tMinPB){
                     try {
                         minPP = heapPP.removeMin();
+
+                        lastIsOverlap = minPP.t() == 0;
 
                         Collision.resolveCollision(particles[minPP.i()],particles[minPP.j()],minPP.t());
 
@@ -272,7 +276,7 @@ public class Main extends JPanel{
 
             //check if the collision happens after minTime, i.e. if *real* collision
             //implicitly check whether time is positive
-            if (collisionTime >= minEvent.t() ) {
+            if (collisionTime >= minEvent.t()) {
                 resetAndInsert(pUpdateIndex, boundaryIndex, heap, events, collisionTime);
             }
         }
