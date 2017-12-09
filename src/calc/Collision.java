@@ -254,22 +254,22 @@ public class Collision {
         VectorCalculus.minus(DX,boundary.position,particle.position);
 
         //Set boundary.normal in same direction as DXn
-        double DXn = Math.abs(VectorCalculus.dot(boundary.normal,DX));
-        int sign = (int) Math.signum(DXn);
+        double DXn = VectorCalculus.dot(boundary.normal,DX);
+//        int sign = (int) Math.signum(DXn);
 //        boundary.switchNormalSignTo(sign);
 
         //calculate distance between particle and boundary
-        if (DXn > particle.radius && sign > 0){
+        if (DXn > 0 && DXn > particle.radius){
             return DXn - particle.radius;
         }
-        else if (DXn < particle.radius && sign > 0){
-            return particle.radius - DXn;
+        else if (DXn > 0 && DXn < particle.radius){
+            return DXn - particle.radius;
         }
-        else if (sign * DXn < particle.radius && sign < 0){
-            return -(DXn + particle.radius);
+        else if (DXn < 0 && -DXn < particle.radius){
+            return - (-DXn + particle.radius);
         }
-        else{ //if (sign * DXn > particle.radius && sign < 0){
-            return DXn + particle.radius;
+        else{ //if (Math.abs(DXn) > particle.radius && sign < 0){
+            return - (-DXn + particle.radius);
         }
     }
 
