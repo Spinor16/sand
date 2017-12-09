@@ -173,7 +173,7 @@ public class VectorCalculus {
         if (discriminant < 0){
             return -1;
         }
-        double q = -0.5*(b + Math.copySign(Math.sqrt(discriminant), b));
+        double q = - 0.5 * (b + Math.copySign(Math.sqrt(discriminant), b));
 
         double collisionTime = q / a;
         double collisionTime2 = c / q;
@@ -209,7 +209,7 @@ public class VectorCalculus {
         double fDeriv;
         double counter = 0;
         double t = init;
-        while (Math.abs(fVal) > eps && counter < 200000) {
+        while (Math.abs(fVal) > eps && counter < 200) {
             fVal = computePolyHorner(coeffs, order, t);
             fDeriv = computePolyDerivHorner(coeffs, order, t);
             t -= fVal / fDeriv;

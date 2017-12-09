@@ -2,12 +2,17 @@ package data_structures;
 
 import calc.Collision;
 import calc.VectorCalculus;
+import com.sun.org.apache.bcel.internal.Constants;
 import utils.Drawing;
 
 import java.awt.Color;
 
 import java.awt.*;
 import java.util.ArrayList;
+
+
+
+
 
 public class Particle implements CollisionPartner{
     public double[] position;
@@ -18,6 +23,9 @@ public class Particle implements CollisionPartner{
     public int index;
 
     public int colorIndex;
+
+    public static final double RESTITUTION_VELOCITY = 0.5;
+
 
     public ArrayList<Boundary> touchingBoundaries = new ArrayList<>();
 
@@ -78,8 +86,7 @@ public class Particle implements CollisionPartner{
     public boolean checkIfOnBoundary(Boundary boundary){
         double dist = Collision.getDist(this, boundary);
         double vn = Collision.getVn(this, boundary);
-        if (dist<0){
-            VectorCalculus.minusSE(velocity, VectorCalculus.mult(temp, 2 * vn, boundary.normal));
+        if ((dist < 0 && vn > 0)){
             return true;
         }
         else{
@@ -93,12 +100,14 @@ public class Particle implements CollisionPartner{
     }
 
     public void setTouchingBoundary(Boundary boundary){
-        if (!touchingBoundaries.isEmpty() && !touchingBoundaries.contains(boundary)){
+        reflectOnBoundary(boundary);
+        if (!touchingBoundaries.contains(boundary)){
             touchingBoundaries.add(boundary);
         }
         else{
             return;
         }
+
     }
 
     public double[] gOnBoundary(){
@@ -110,5 +119,13 @@ public class Particle implements CollisionPartner{
 
         }
         return g;
+    }
+
+    public void reflectOnBoundary(Boundary boundary){
+        double vn = Collision.getVn(this, boundary);
+        if (vn > 0){
+            double reflectionVelocity = Math.max(2 * vn, RESTITUTION_VELOCITY);
+            VectorCalculus.minusSE(velocity, VectorCalculus.mult(temp, reflectionVelocity, boundary.normal));
+        }
     }
 }

@@ -104,7 +104,7 @@ public class Main extends JPanel{
             for (Particle particle : particles) {
                 for (int j = 0; j < boundaries.length; j++) {
                     collisionTime = Collision.findCollisionTime(particle, boundaries[j]);
-                    if (collisionTime > 0) {
+                    if (collisionTime >= 0) {
                         try {
                             heapPB.insert(
                                     new CollisionEvent(
@@ -154,12 +154,6 @@ public class Main extends JPanel{
                         heapPB.removeEventsInRowSE(minPP.i(),events);
                         heapPB.removeEventsInRowSE(minPP.j(),events);
 
-                        //Check touchingBoundaries particle i
-                        updateTouchingBoundaries(particles[minPP.i()]);
-
-                        //Check touchingBoundary particle j
-                        updateTouchingBoundaries(particles[minPP.j()]);
-
                         //Insert new CollisionEvents for i, particle-particle
                         updatePP(minPP.i(), minPP, heapPP, nearestNeighbours[minPP.i()], events, true);
 
@@ -194,9 +188,6 @@ public class Main extends JPanel{
                         //Other events involving boundary are still valid as boundary
                         //is not changed
                         heapPB.removeEventsInRowSE(minPB.i(),events);
-
-                        //Check touchingBoundaries particle i
-                        updateTouchingBoundaries(particles[minPB.i()]);
 
                         //Insert new CollisionEvents for i, particle-particle
                         updatePP(minPB.i(), minPB, heapPP, nearestNeighbours[minPB.i()], events, false);
@@ -343,13 +334,13 @@ public class Main extends JPanel{
         }
     }
 
-    public void updateTouchingBoundaries(Particle particle){
+    public static void updateTouchingBoundaries(Particle particle){
         for (Boundary boundary : boundaries) {
             boolean isTouchingBoundary = particle.checkIfOnBoundary(boundary);
             if (isTouchingBoundary){
                 particle.setTouchingBoundary(boundary);
             }
-            else if (!particle.touchingBoundaries.isEmpty() && particle.touchingBoundaries.contains(boundary)){
+            else if (particle.touchingBoundaries.contains(boundary)){
                 particle.touchingBoundaries.remove(boundary);
             }
         }
