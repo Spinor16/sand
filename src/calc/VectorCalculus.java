@@ -2,6 +2,8 @@ package calc;
 
 public class VectorCalculus {
 
+    public static final double MAX_COUNT = 10;
+
     //SE means side effect: the vector passed to the function is altered.
 
     public static double norm2(double[] vector){
@@ -209,16 +211,16 @@ public class VectorCalculus {
         double fDeriv;
         double counter = 0;
         double t = init;
-        while (Math.abs(fVal) > eps && counter < 200) {
+        while (Math.abs(fVal) > eps && counter < MAX_COUNT) {
             fVal = computePolyHorner(coeffs, order, t);
             fDeriv = computePolyDerivHorner(coeffs, order, t);
             t -= fVal / fDeriv;
             counter++;
         }
 //
-//        if (counter == 100){
-//            return -1;
-//        }
+        if (counter == MAX_COUNT){
+            return -1;
+        }
         return t;
     }
 
