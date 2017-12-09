@@ -40,11 +40,11 @@ public class Main extends JPanel{
         //Settings
 //        int nParticles = 50;
 //        int nBoundaries = 2;
-        int nNearestNeighbours = 70;
+        int nNearestNeighbours = 200;
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(70,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(200,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -81,7 +81,7 @@ public class Main extends JPanel{
                     int NNj = nearestNeighbours[particle.index][j]; // particle index of current nearest neighbour
                     if (particle.index < NNj) {
                         collisionTime = Collision.findCollisionTime(particle, particles[NNj]);
-                        if (collisionTime >= 0) {
+                        if (collisionTime > 0) {
                             try {
                                 heapPP.insert(
                                         new CollisionEvent(
@@ -104,7 +104,7 @@ public class Main extends JPanel{
             for (Particle particle : particles) {
                 for (int j = 0; j < boundaries.length; j++) {
                     collisionTime = Collision.findCollisionTime(particle, boundaries[j]);
-                    if (collisionTime >= 0) {
+                    if (collisionTime > 0) {
                         try {
                             heapPB.insert(
                                     new CollisionEvent(
