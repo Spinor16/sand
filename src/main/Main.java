@@ -40,13 +40,14 @@ public class Main extends JPanel{
     public void run(double timeStep, double endTime) {
 
         //Settings
-//        int nParticles = 50;
-//        int nBoundaries = 2;
-        int nNearestNeighbours = 200;
+        int resolution = 1;
+        int nNearestNeighbours = 60;
+        int nParticles = nNearestNeighbours*resolution;
+
         double movieTime = 0;
         double movieTimeStep = 0.1;
 
-        InitialConditions init = new InitialConditions(200,1,1,Math.PI/2);
+        InitialConditions init = new InitialConditions(nParticles,1,1,Math.PI/2);
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);

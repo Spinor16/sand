@@ -41,6 +41,7 @@ public class InitialConditions extends JPanel {
 
     //constants
     public final double pRadius = 0.01;
+    public final double pMass = 1.;
     public final double[] origin = {0,0};
     public double width;
     public double height;
@@ -69,8 +70,11 @@ public class InitialConditions extends JPanel {
 //        nParticles = (int) (width/(2*particleDistanceInitial+2*pRadius));
         IO.print(nParticles);
         particles = new Particle[nParticles];
-        for (int i = 0; i < particles.length; i++) {
-            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0});
+        for (int i = 0; i < particles.length/2; i++) {
+            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, pRadius, pMass);
+        }
+        for (int i = particles.length/2; i < particles.length; i++) {
+            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, 0.5*pRadius, 4*pMass);
         }
         makeBoundary();
         makeParticles();

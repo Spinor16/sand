@@ -6,7 +6,7 @@ import main.Main;
 
 public class Collision {
     public static final double[] g = {0, -9.81};
-    private static double COR = 0.5;
+    private static double COR = 0.3;
     private static double[] temp = new double[]{0,0};
     private static double[] temp2 = new double[]{0,0};
     private static double[] temp3 = new double[]{0,0};
@@ -216,7 +216,7 @@ public class Collision {
         double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
 
         if (overlapping){
-            collisionMomentum += Math.max(collisionMomentum, (particle1.mass + particle2.mass) * MOM_COEFF * norm);
+            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * MOM_COEFF * norm);
         }
 
         double collisionVelocity1 = collisionMomentum / particle1.mass;

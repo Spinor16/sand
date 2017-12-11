@@ -29,11 +29,11 @@ public class Particle implements CollisionPartner{
 
     private double[] temp = new double[]{0,0};
 
-    public Particle(double[] position, double[] velocity) {
+    public Particle(double[] position, double[] velocity, double radius, double mass) {
         //mass
-        this.mass = 1;
+        this.mass = mass;
 
-        this.radius = 0.01;
+        this.radius = radius;
 
         //position
         this.position = position;
