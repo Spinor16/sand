@@ -3,6 +3,7 @@ package calc;
 import data_structures.Boundary;
 import data_structures.Particle;
 import main.Main;
+import main.Settings;
 
 public class Collision {
     public static final double[] g = {0, -9.81};
@@ -13,7 +14,6 @@ public class Collision {
     private static double[] temp4 = new double[]{0,0,0,0,0};
     private static double[] temp5 = new double[]{0,0};
     private static final double EPS = 1e-5;
-    private static final double MOM_COEFF = 0.001;
 
     /**
      *
@@ -216,7 +216,7 @@ public class Collision {
         double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
 
         if (overlapping){
-            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * MOM_COEFF * norm);
+            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * Main.settings.getMom_coeff() * norm);
         }
 
         double collisionVelocity1 = collisionMomentum / particle1.mass;
@@ -224,8 +224,8 @@ public class Collision {
 
 
         if (particle1.isOnBoundary() || particle2.isOnBoundary()){
-            collisionVelocity1 = Math.max(collisionVelocity1, Particle.RESTITUTION_VELOCITY);
-            collisionVelocity2 = Math.max(collisionVelocity2, Particle.RESTITUTION_VELOCITY);
+            collisionVelocity1 = Math.max(collisionVelocity1, Main.settings.getRestitution_velocity());
+            collisionVelocity2 = Math.max(collisionVelocity2, Main.settings.getRestitution_velocity());
         }
 
 

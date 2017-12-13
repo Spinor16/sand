@@ -2,6 +2,7 @@ package data_structures;
 
 import calc.Collision;
 import calc.VectorCalculus;
+import main.Main;
 import utils.Drawing;
 
 import java.awt.Color;
@@ -22,8 +23,6 @@ public class Particle implements CollisionPartner{
     public int index;
 
     public int colorIndex;
-
-    public static final double RESTITUTION_VELOCITY = 0.1;
 
     public ArrayList<Boundary> touchingBoundaries = new ArrayList<>();
 
@@ -123,7 +122,7 @@ public class Particle implements CollisionPartner{
     public void reflectOnBoundary(Boundary boundary){
         double vn = Collision.getVn(this, boundary);
         if (vn > 0){
-            double reflectionVelocity = Math.max(2 * vn, RESTITUTION_VELOCITY);
+            double reflectionVelocity = Math.max(2 * vn, Main.settings.getRestitution_velocity());
             VectorCalculus.minusSE(velocity, VectorCalculus.mult(temp, reflectionVelocity, boundary.normal));
         }
     }

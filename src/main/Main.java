@@ -22,6 +22,8 @@ public class Main extends JPanel{
 
     public static boolean lastIsOverlap;
 
+    public static Settings settings = new Settings1();
+
     public static void main(String[] args) {
 
 
@@ -32,7 +34,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.0005,200);
+        main.run(settings.getTimeStep(),settings.getEndTime());
 
     }
 
@@ -40,15 +42,7 @@ public class Main extends JPanel{
 
     public void run(double timeStep, double endTime) {
 
-        //Settings
-        int resolution = 50;
-        int nNearestNeighbours = 50;
-        int nParticles = nNearestNeighbours*resolution;
-
-        double movieTime = 0;
-        double movieTimeStep = 0.1;
-
-        InitialConditions init = new InitialConditions(nParticles,1,1,Math.PI/2);
+        InitialConditions init = settings.getInitialConditions();
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -70,9 +64,9 @@ public class Main extends JPanel{
 
 
             //Look for nearestNeighbours
-            int[][] nearestNeighbours = new int[particles.length][nNearestNeighbours];
+            int[][] nearestNeighbours = new int[particles.length][settings.getnNearestNeighbours()];
             for (Particle particle  : particles) {
-                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,nNearestNeighbours);
+                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,settings.getnNearestNeighbours());
             }
 
             //Look for touchingBoundaries
@@ -81,7 +75,7 @@ public class Main extends JPanel{
 
             //Add CollisionTimes particle - particle
             for (Particle particle : particles) {
-                for (int j = 0; j < nNearestNeighbours; j++) {
+                for (int j = 0; j < settings.getnNearestNeighbours(); j++) {
                     int NNj = nearestNeighbours[particle.index][j]; // particle index of current nearest neighbour
                     if (particle.index < NNj) {
                         collisionTime = Collision.findCollisionTime(particle, particles[NNj]);
