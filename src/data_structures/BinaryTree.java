@@ -74,7 +74,7 @@ public class BinaryTree {
     /**
      * Recursively builds the BinaryTree with Nodes based on indices.
      * @param dimension Indicates the dimension at which to partition at this level of the recursion.
-     * @param currentNode Node on which the algorithm currently acts upon.
+     * @param currentNode Node on which the algorithm currently acts.
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
     public void buildTree(int dimension, Node currentNode) {
@@ -187,7 +187,7 @@ public class BinaryTree {
         else if (currentNode.hasLeft() && BoxDist2.metric(pos, currentNode.lChild) < queue.max()) {
             kNearestNeighbours(pos, k, currentNode.lChild, queue);
         }
-        else if (BoxDist2.metric(pos, currentNode.rChild) < queue.max()) {
+        else if (currentNode.hasRight() && BoxDist2.metric(pos, currentNode.rChild) < queue.max()) {
             kNearestNeighbours(pos, k, currentNode.rChild, queue);
         }
     }

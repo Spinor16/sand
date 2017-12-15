@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class Main extends JPanel{
 
+    static int counter;
     static BinaryTree tree;
     static Particle[] particles;
     static Boundary[] boundaries;
@@ -18,6 +19,10 @@ public class Main extends JPanel{
 
     static public SymmetricCollisionHeap heapPP;
     static public CollisionHeap heapPB;
+
+    public static boolean lastIsOverlap;
+
+    public static Settings settings = new Settings1();
 
     public static void main(String[] args) {
 
@@ -29,7 +34,7 @@ public class Main extends JPanel{
         top.getContentPane().add(main);
         top.setVisible(true);
 
-        main.run(0.0005,200);
+        main.run(settings.getTimeStep(),settings.getEndTime());
 
     }
 
@@ -37,14 +42,7 @@ public class Main extends JPanel{
 
     public void run(double timeStep, double endTime) {
 
-        //Settings
-//        int nParticles = 50;
-//        int nBoundaries = 2;
-        int nNearestNeighbours = 70;
-        double movieTime = 0;
-        double movieTimeStep = 0.1;
-
-        InitialConditions init = new InitialConditions(70,1,1,Math.PI/2);
+        InitialConditions init = settings.getInitialConditions();
         particles = init.getParticles();
         boundaries = init.getBoundaries();
         tree = new BinaryTree(particles);
@@ -66,15 +64,18 @@ public class Main extends JPanel{
 
 
             //Look for nearestNeighbours
-            int[][] nearestNeighbours = new int[particles.length][nNearestNeighbours];
+            int[][] nearestNeighbours = new int[particles.length][settings.getnNearestNeighbours()];
             for (Particle particle  : particles) {
-                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,nNearestNeighbours);
+                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,settings.getnNearestNeighbours());
             }
+
+            //Look for touchingBoundaries
+            updateTouchingBoundaries();
 
 
             //Add CollisionTimes particle - particle
             for (Particle particle : particles) {
-                for (int j = 0; j < nNearestNeighbours; j++) {
+                for (int j = 0; j < settings.getnNearestNeighbours(); j++) {
                     int NNj = nearestNeighbours[particle.index][j]; // particle index of current nearest neighbour
                     if (particle.index < NNj) {
                         collisionTime = Collision.findCollisionTime(particle, particles[NNj]);
@@ -139,6 +140,8 @@ public class Main extends JPanel{
                     try {
                         minPP = heapPP.removeMin();
 
+                        lastIsOverlap = minPP.t() == 0;
+
                         Collision.resolveCollision(particles[minPP.i()],particles[minPP.j()],minPP.t());
 
                         //Events involving particle i or j are removed from heap
@@ -186,7 +189,6 @@ public class Main extends JPanel{
                         //is not changed
                         heapPB.removeEventsInRowSE(minPB.i(),events);
 
-
                         //Insert new CollisionEvents for i, particle-particle
                         updatePP(minPB.i(), minPB, heapPP, nearestNeighbours[minPB.i()], events, false);
 
@@ -204,23 +206,25 @@ public class Main extends JPanel{
 
             //project forward particles
             for (int i = 0; i < particles.length; i++) {
-                Collision.projectForwardParticle(particles[i], timeStep);
+                Collision.projectParticle(particles[i], timeStep);
             }
 
             //project forward boundaries
             for (int i = 0; i < boundaries.length; i++) {
-                Collision.projectForwardBoundary(boundaries[i], timeStep);
+                Collision.projectBoundary(boundaries[i], timeStep);
             }
 
             tree.buildTree(tree.root);
             time += timeStep;
 
             paint = true;
-            if (paint) {
+            counter++;
+            if (paint && counter == 1) {
                 repaint();
+                counter = 0;
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(2);
+                    Thread.sleep(settings.getSleep());
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -326,4 +330,21 @@ public class Main extends JPanel{
         }
     }
 
+    public void updateTouchingBoundaries(){
+        for (Particle particle : particles) {
+            updateTouchingBoundaries(particle);
+        }
+    }
+
+    public static void updateTouchingBoundaries(Particle particle){
+        for (Boundary boundary : boundaries) {
+            boolean isTouchingBoundary = particle.checkIfOnBoundary(boundary);
+            if (isTouchingBoundary){
+                particle.setTouchingBoundary(boundary);
+            }
+            else if (particle.touchingBoundaries.contains(boundary)){
+                particle.touchingBoundaries.remove(boundary);
+            }
+        }
+    }
 }

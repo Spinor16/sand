@@ -2,6 +2,8 @@ package calc;
 
 public class VectorCalculus {
 
+    public static final double MAX_COUNT = 10;
+
     //SE means side effect: the vector passed to the function is altered.
 
     public static double norm2(double[] vector){
@@ -166,20 +168,20 @@ public class VectorCalculus {
         return ret;
     }
 
-    public static double sqrt(double a, double b, double c) {
+    public static double sqrt(double a, double b, double c, boolean overlap) {
         double result;
         double discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0){
             return -1;
         }
-        double q = -(b + Math.copySign(Math.sqrt(discriminant),c));
+        double q = - 0.5 * (b + Math.copySign(Math.sqrt(discriminant), b));
 
-        double collisionTime = q / 2 / a;
-        double collisionTime2 = 2 * c / q;
+        double collisionTime = q / a;
+        double collisionTime2 = c / q;
         double min = Math.min(collisionTime, collisionTime2);
 
-        if(min>0){
+        if(min > 0 || overlap){
             result = min;
         }
         else{
@@ -188,4 +190,57 @@ public class VectorCalculus {
         return result;
     }
 
+    public static double newtonRootsSqrt(double c, double init, double eps){
+
+        double counter = 0;
+        double t = init;
+        while (Math.abs(t - c / t) > eps && counter < 200000) {
+            t += c / t;
+            counter++;
+        }
+//
+//        if (counter == 100){
+//            return -1;
+//        }
+        return t;
+    }
+
+    public static double newtonRootsPoly(double[] coeffs, double init, double eps, int order){
+
+        double fVal = computePolyHorner(coeffs, order, init);
+        double fDeriv;
+        double counter = 0;
+        double t = init;
+        while (Math.abs(fVal) > eps && counter < MAX_COUNT) {
+            fVal = computePolyHorner(coeffs, order, t);
+            fDeriv = computePolyDerivHorner(coeffs, order, t);
+            t -= fVal / fDeriv;
+            counter++;
+        }
+//
+        if (counter == MAX_COUNT){
+            return -1;
+        }
+        return t;
+    }
+
+    public static double computePolyHorner(double[] coeffs, int order, double x){
+        double result = 0;
+
+        for(int i = 0; i <= order; i++){
+            result = result * x + coeffs[i];
+        }
+
+        return result;
+    }
+
+    public static double computePolyDerivHorner(double[] coeffs, int order, double x){
+        double result = 0;
+
+        for(int i = 0; i <= order - 1 ; i++){
+            result = result * x + (order - i) * coeffs[i];
+        }
+
+        return result;
+    }
 }

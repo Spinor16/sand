@@ -1,10 +1,18 @@
 package data_structures;
 
+import calc.Collision;
+import calc.VectorCalculus;
+import main.Main;
 import utils.Drawing;
 
 import java.awt.Color;
 
 import java.awt.*;
+import java.util.ArrayList;
+
+
+
+
 
 public class Particle implements CollisionPartner{
     public double[] position;
@@ -15,13 +23,16 @@ public class Particle implements CollisionPartner{
     public int index;
 
     public int colorIndex;
-    //private double speedFactor;
 
-    public Particle(double[] position, double[] velocity) {
+    public ArrayList<Boundary> touchingBoundaries = new ArrayList<>();
+
+    private double[] temp = new double[]{0,0};
+
+    public Particle(double[] position, double[] velocity, double radius, double mass) {
         //mass
-        this.mass = 1;
+        this.mass = mass;
 
-        this.radius = 0.01;
+        this.radius = radius;
 
         //position
         this.position = position;
@@ -65,7 +76,54 @@ public class Particle implements CollisionPartner{
         g.setColor(myColor);
 
         if(colorIndex==0){g.setColor(Color.RED);}
+        if(isOnBoundary()){g.setColor(Color.YELLOW);}
 
         g.fillOval(scaledValues.x , scaledValues.y, scaledValues.width, scaledValues.height);
+    }
+
+    public boolean checkIfOnBoundary(Boundary boundary){
+        double dist = Collision.getDist(this, boundary);
+        double vn = Collision.getVn(this, boundary);
+        if ((dist < 0 && vn > 0)){
+            return true;
+        }
+        else{
+            return false;
+        }
+//        return false;
+    }
+
+    public boolean isOnBoundary(){
+        return !touchingBoundaries.isEmpty();
+    }
+
+    public void setTouchingBoundary(Boundary boundary){
+        reflectOnBoundary(boundary);
+        if (!touchingBoundaries.contains(boundary)){
+            touchingBoundaries.add(boundary);
+        }
+        else{
+            return;
+        }
+
+    }
+
+    public double[] gOnBoundary(){
+        double[] g = Collision.g.clone();
+        if (isOnBoundary()){
+            for (Boundary boundary : touchingBoundaries) {
+                VectorCalculus.minusSE(g, VectorCalculus.mult(temp, VectorCalculus.dot(g,boundary.normal),boundary.normal));
+            }
+
+        }
+        return g;
+    }
+
+    public void reflectOnBoundary(Boundary boundary){
+        double vn = Collision.getVn(this, boundary);
+        if (vn > 0){
+            double reflectionVelocity = Math.max(2 * vn, Main.settings.getRestitution_velocity());
+            VectorCalculus.minusSE(velocity, VectorCalculus.mult(temp, reflectionVelocity, boundary.normal));
+        }
     }
 }
