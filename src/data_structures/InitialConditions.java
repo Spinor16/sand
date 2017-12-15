@@ -40,13 +40,13 @@ public class InitialConditions extends JPanel {
      */
 
     //constants
-    public final double pRadius = 0.01;
+    public final double pRadius = 0.005;
     public final double pMass = 1.;
     public final double[] origin = {0,0};
     public double width;
     public double height;
     public double angle;
-    public final double particleDistanceInitial = 0.4; // around the particle, in units of the radius
+    public final double particleDistanceInitial = 0.1; // around the particle, in units of the radius
     public final int nParticles;
 
     private Boundary[] boundaries = new Boundary[3];
@@ -74,7 +74,7 @@ public class InitialConditions extends JPanel {
             particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, pRadius, pMass);
         }
         for (int i = particles.length/2; i < particles.length; i++) {
-            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, 0.5*pRadius, 4*pMass);
+            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, 0.6*pRadius, 0.6*0.6*pMass);
         }
         makeBoundary();
         makeParticles();
@@ -142,7 +142,7 @@ public class InitialConditions extends JPanel {
             displUp = (double)(i/nParticlesInRow)*(2*pRadius*(particleDistanceInitial+1));
 
             particles[i].position[0] = origin[0]+((i % nParticlesInRow)+1)*(2*pRadius*(particleDistanceInitial+1));
-            particles[i].position[1] = origin[1]+height+displUp;
+            particles[i].position[1] = origin[1]+height-displUp;
 
             particles[i].velocity[1] = 0;
             particles[i].setColorIndex(i);

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class Main extends JPanel{
 
+    static int counter;
     static BinaryTree tree;
     static Particle[] particles;
     static Boundary[] boundaries;
@@ -40,8 +41,8 @@ public class Main extends JPanel{
     public void run(double timeStep, double endTime) {
 
         //Settings
-        int resolution = 1;
-        int nNearestNeighbours = 60;
+        int resolution = 50;
+        int nNearestNeighbours = 50;
         int nParticles = nNearestNeighbours*resolution;
 
         double movieTime = 0;
@@ -223,8 +224,10 @@ public class Main extends JPanel{
             time += timeStep;
 
             paint = true;
-            if (paint) {
+            counter++;
+            if (paint && counter == 1) {
                 repaint();
+                counter = 0;
                 try {
                     //wait after every calculation to slow motion down
                     Thread.sleep(2);
