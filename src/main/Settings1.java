@@ -7,8 +7,8 @@ public class Settings1 implements Settings{
     int resolution = 5;
     int nNearestNeighbours = 60;
     double nParticles = 100;
-    double mom_coeff = 0.1;
-    double restitution_velocity = 0.01;
+    double mom_coeff = 0.3;
+    double restitution_velocity = 0.000001;
     double timeStep = 0.005;
     double endTime = 200;
     int sleep = 20;
