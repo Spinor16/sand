@@ -7,7 +7,6 @@ import main.Settings;
 
 public class Collision {
     public static final double[] g = {0, -9.81};
-    private static double COR = 0.3;
     private static double[] temp = new double[]{0,0};
     private static double[] temp2 = new double[]{0,0};
     private static double[] temp3 = new double[]{0,0};
@@ -213,10 +212,10 @@ public class Collision {
         //For convenience calculate in advance
         double mass_term = (1/particle1.mass + 1/particle2.mass);
         double dot = VectorCalculus.dot(n,DV) / 2. / mass_term;
-        double collisionMomentum = - dot + Math.sqrt(dot * dot - (COR - 1) * energy / mass_term);
+        double collisionMomentum = - dot + Math.sqrt(dot * dot - (Main.settings.getCoefficient_of_restitution() - 1) * energy / mass_term);
 
         if (overlapping){
-            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * Main.settings.getMom_coeff() * norm);
+            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * Main.settings.getMom_coeff() * norm * norm);
         }
 
         double collisionVelocity1 = collisionMomentum / particle1.mass;
@@ -258,7 +257,7 @@ public class Collision {
         //first normalize particle.velocity
         particle.velocity = VectorCalculus.divide(VectorCalculus.norm(particle.velocity),particle.velocity);
         //then multiply with energy loss corrected absolute value
-        VectorCalculus.multSE(Math.sqrt((1- COR)*vi2), particle.velocity);
+        VectorCalculus.multSE(Math.sqrt((1- Main.settings.getCoefficient_of_restitution())*vi2), particle.velocity);
     }
 
     public static void projectParticle(Particle particle, double timeStep){

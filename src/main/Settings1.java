@@ -4,12 +4,15 @@ import data_structures.InitialConditions;
 
 public class Settings1 implements Settings{
 
-    int resolution = 4;
+    int resolution = 5;
     int nNearestNeighbours = 60;
-    double mom_coeff = 0.001;
+    double nParticles = 100;
+    double mom_coeff = 0.1;
     double restitution_velocity = 0.01;
     double timeStep = 0.005;
     double endTime = 200;
+    int sleep = 20;
+    double coefficient_of_restitution = 0.7;
 
     InitialConditions initialConditions = new InitialConditions(resolution * nNearestNeighbours,
                                                                 1,1, Math.PI/2);
@@ -47,5 +50,15 @@ public class Settings1 implements Settings{
     @Override
     public InitialConditions getInitialConditions() {
         return initialConditions;
+    }
+
+    @Override
+    public int getSleep() {
+        return sleep;
+    }
+
+    @Override
+    public double getCoefficient_of_restitution() {
+        return coefficient_of_restitution;
     }
 }

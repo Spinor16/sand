@@ -18,4 +18,8 @@ public interface Settings {
 
     public double getEndTime();
 
+    public int getSleep();
+
+    public double getCoefficient_of_restitution();
+
 }

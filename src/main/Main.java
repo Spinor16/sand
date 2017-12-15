@@ -224,7 +224,7 @@ public class Main extends JPanel{
                 counter = 0;
                 try {
                     //wait after every calculation to slow motion down
-                    Thread.sleep(2);
+                    Thread.sleep(settings.getSleep());
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
