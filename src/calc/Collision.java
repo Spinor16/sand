@@ -215,7 +215,7 @@ public class Collision {
         double collisionMomentum = - dot + Math.sqrt(dot * dot - (Main.settings.getCoefficient_of_restitution() - 1) * energy / mass_term);
 
         if (overlapping){
-            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * Main.settings.getMom_coeff() * norm * norm);
+            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * Main.settings.getMom_coeff());
         }
 
         double collisionVelocity1 = collisionMomentum / particle1.mass;
