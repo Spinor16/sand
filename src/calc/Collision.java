@@ -49,7 +49,8 @@ public class Collision {
         double c = 0.5 * (VectorCalculus.dot(DX,DX) - dist2);
 
         if (c < 0){
-            double ret = Main.lastIsOverlap ? Double.NEGATIVE_INFINITY : 0;
+            double ret = Main.nrOverlapCollisions > Main.settings.getMaxNrOverlapCollisions() ? Double.NEGATIVE_INFINITY : 0;
+            if (ret == 0) {Main.nrOverlapCollisions++;}
             return ret;
         }
 
@@ -215,7 +216,11 @@ public class Collision {
         double collisionMomentum = - dot + Math.sqrt(dot * dot - (Main.settings.getCoefficient_of_restitution() - 1) * energy / mass_term);
 
         if (overlapping){
-            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * Main.settings.getMom_coeff());
+            collisionMomentum = Math.max(collisionMomentum, (particle1.mass + particle2.mass) * Main.settings.getMom_coeff()
+                                * norm / (particle1.radius + particle2.radius) * norm / (particle1.radius + particle2.radius));
+        }
+        else {
+            Main.nrOverlapCollisions = 0;
         }
 
         double collisionVelocity1 = collisionMomentum / particle1.mass;

@@ -21,6 +21,7 @@ public class Main extends JPanel{
     static public CollisionHeap heapPB;
 
     public static boolean lastIsOverlap;
+    public static int nrOverlapCollisions = 0;
 
     public static Settings settings = new Settings1();
 
@@ -140,7 +141,7 @@ public class Main extends JPanel{
                     try {
                         minPP = heapPP.removeMin();
 
-                        lastIsOverlap = minPP.t() == 0;
+//                        lastIsOverlap = minPP.t() == 0;
 
                         Collision.resolveCollision(particles[minPP.i()],particles[minPP.j()],minPP.t());
 
@@ -219,7 +220,7 @@ public class Main extends JPanel{
 
             paint = true;
             counter++;
-            if (paint && counter == 1) {
+            if (paint && counter == settings.getPaintFrequency()) {
                 repaint();
                 counter = 0;
                 try {
