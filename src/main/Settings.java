@@ -22,4 +22,8 @@ public interface Settings {
 
     public double getCoefficient_of_restitution();
 
+    public int getMaxNrOverlapCollisions();
+
+    public int getPaintFrequency();
+
 }
