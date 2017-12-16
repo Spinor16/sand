@@ -7,6 +7,9 @@ import utils.Drawing;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Main extends JPanel{
@@ -25,7 +28,9 @@ public class Main extends JPanel{
 
     public static Settings settings = new Settings1();
 
-    public static void main(String[] args) {
+    static File file;
+    static PrintWriter writer;
+    public static void main(String[] args) throws IOException {
 
 
         Main main = new Main();
@@ -34,6 +39,13 @@ public class Main extends JPanel{
         top.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         top.getContentPane().add(main);
         top.setVisible(true);
+
+        if (settings.isPrintOut()){
+            file = new File("energy.csv");
+//            file.mkdirs();
+            file.createNewFile();
+            writer = new PrintWriter(file);
+        }
 
         main.run(settings.getTimeStep(),settings.getEndTime());
 
@@ -58,16 +70,16 @@ public class Main extends JPanel{
         double tMinPB;
         ArrayList<CollisionEvent> events = new ArrayList<>(); //temporary storing of CollisionEvents
 
-        while(time<endTime){
+        while (time < endTime) {
 
             heapPP = new SymmetricCollisionHeap(particles.length);
-            heapPB = new CollisionHeap(particles.length,boundaries.length);
+            heapPB = new CollisionHeap(particles.length, boundaries.length);
 
 
             //Look for nearestNeighbours
             int[][] nearestNeighbours = new int[particles.length][settings.getnNearestNeighbours()];
-            for (Particle particle  : particles) {
-                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position,settings.getnNearestNeighbours());
+            for (Particle particle : particles) {
+                nearestNeighbours[particle.index] = tree.getIndiceskNearestNeighbours(particle.position, settings.getnNearestNeighbours());
             }
 
             //Look for touchingBoundaries
@@ -98,7 +110,6 @@ public class Main extends JPanel{
             }
 
 
-
             //Add CollisionTimes particle - boundaries
             for (Particle particle : particles) {
                 for (int j = 0; j < boundaries.length; j++) {
@@ -120,9 +131,8 @@ public class Main extends JPanel{
             }
 
 
-
             paint = false;
-            while(true){
+            while (true) {
 
                 tMinPP = Double.POSITIVE_INFINITY;
                 tMinPB = Double.POSITIVE_INFINITY;
@@ -136,14 +146,13 @@ public class Main extends JPanel{
 
                 if (tMinPB > timeStep && tMinPP > timeStep) {
                     break;
-                }
-                else if (tMinPP < tMinPB){
+                } else if (tMinPP < tMinPB) {
                     try {
                         minPP = heapPP.removeMin();
 
 //                        lastIsOverlap = minPP.t() == 0;
 
-                        Collision.resolveCollision(particles[minPP.i()],particles[minPP.j()],minPP.t());
+                        Collision.resolveCollision(particles[minPP.i()], particles[minPP.j()], minPP.t());
 
                         //Events involving particle i or j are removed from heap
                         //and stored in array events for further use after reset
@@ -152,8 +161,8 @@ public class Main extends JPanel{
 
                         //Events involving particle i are removed from heap
                         //and stored in array events for further use after reset
-                        heapPB.removeEventsInRowSE(minPP.i(),events);
-                        heapPB.removeEventsInRowSE(minPP.j(),events);
+                        heapPB.removeEventsInRowSE(minPP.i(), events);
+                        heapPB.removeEventsInRowSE(minPP.j(), events);
 
                         //Insert new CollisionEvents for i, particle-particle
                         updatePP(minPP.i(), minPP, heapPP, nearestNeighbours[minPP.i()], events, true);
@@ -173,8 +182,7 @@ public class Main extends JPanel{
                     } catch (HeapException e) {
                         e.printStackTrace();
                     }
-                }
-                else if (tMinPP > tMinPB){
+                } else if (tMinPP > tMinPB) {
                     try {
                         minPB = heapPB.removeMin();
 
@@ -188,7 +196,7 @@ public class Main extends JPanel{
                         //and stored in array events for further use after reset
                         //Other events involving boundary are still valid as boundary
                         //is not changed
-                        heapPB.removeEventsInRowSE(minPB.i(),events);
+                        heapPB.removeEventsInRowSE(minPB.i(), events);
 
                         //Insert new CollisionEvents for i, particle-particle
                         updatePP(minPB.i(), minPB, heapPP, nearestNeighbours[minPB.i()], events, false);
@@ -220,6 +228,11 @@ public class Main extends JPanel{
 
             paint = true;
             counter++;
+
+            if (settings.isPrintOut()) {
+                printInfoPerTime(time, writer);
+            }
+
             if (paint && counter == settings.getPaintFrequency()) {
                 repaint();
                 counter = 0;
@@ -231,7 +244,6 @@ public class Main extends JPanel{
                     e.printStackTrace();
                 }
             }
-
 
 
         }
@@ -347,5 +359,13 @@ public class Main extends JPanel{
                 particle.touchingBoundaries.remove(boundary);
             }
         }
+    }
+
+    public static void printInfoPerTime (double time, PrintWriter writer){
+        double energy = 0;
+        for (Particle particle : particles) {
+            energy += particle.velocity[0] * particle.velocity[0] + particle.velocity[1] * particle.velocity[1];
+        }
+        writer.print(time + ", " + energy + " \n");
     }
 }

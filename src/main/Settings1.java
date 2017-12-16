@@ -7,14 +7,19 @@ public class Settings1 implements Settings{
     int resolution = 50;
     int nNearestNeighbours = 20;
     double nParticles = 100;
-    double mom_coeff = 0.001;
+
+    double coefficient_of_restitution = 0.3;
+    int maxNrOverlapCollisions = 10;
+
+    double mom_coeff = 0.0001;
     double restitution_velocity = 1;
+
     double timeStep = 0.0005;
     double endTime = 200;
     int sleep = 2;
-    double coefficient_of_restitution = 0.7;
-    int maxNrOverlapCollisions = 1;
     int getPaintFrequency = 3;
+    boolean printOut = true;
+
 
     InitialConditions initialConditions = new InitialConditions(resolution * nNearestNeighbours,
                                                                 1,1, Math.PI/2);
@@ -69,7 +74,12 @@ public class Settings1 implements Settings{
         return maxNrOverlapCollisions;
     }
 
+    @Override
     public int getPaintFrequency() {
         return getPaintFrequency;
+    }
+
+    public boolean isPrintOut() {
+        return printOut;
     }
 }

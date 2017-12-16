@@ -26,4 +26,6 @@ public interface Settings {
 
     public int getPaintFrequency();
 
+    public boolean isPrintOut();
+
 }
