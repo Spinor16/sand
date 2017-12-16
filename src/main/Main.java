@@ -14,7 +14,8 @@ import java.util.ArrayList;
 
 public class Main extends JPanel{
 
-    static int counter;
+    static int paintFreqCounter = 0;
+    static int nrOfCollisionsPerTimeStepCounter = 0;
     static BinaryTree tree;
     static Particle[] particles;
     static Boundary[] boundaries;
@@ -211,6 +212,7 @@ public class Main extends JPanel{
                         e.printStackTrace();
                     }
                 }
+                nrOfCollisionsPerTimeStepCounter++;
             }
 
             //project forward particles
@@ -227,15 +229,15 @@ public class Main extends JPanel{
             time += timeStep;
 
             paint = true;
-            counter++;
+            paintFreqCounter++;
 
             if (settings.isPrintOut()) {
-                printInfoPerTime(time, writer);
+                printInfoPerTime(time, nrOfCollisionsPerTimeStepCounter, writer);
             }
 
-            if (paint && counter == settings.getPaintFrequency()) {
+            if (paint && paintFreqCounter == settings.getPaintFrequency()) {
                 repaint();
-                counter = 0;
+                paintFreqCounter = 0;
                 try {
                     //wait after every calculation to slow motion down
                     Thread.sleep(settings.getSleep());
@@ -244,6 +246,8 @@ public class Main extends JPanel{
                     e.printStackTrace();
                 }
             }
+
+            nrOfCollisionsPerTimeStepCounter = 0;
 
 
         }
@@ -361,11 +365,11 @@ public class Main extends JPanel{
         }
     }
 
-    public static void printInfoPerTime (double time, PrintWriter writer){
+    public static void printInfoPerTime (double time, double collisionCount, PrintWriter writer){
         double energy = 0;
         for (Particle particle : particles) {
             energy += particle.velocity[0] * particle.velocity[0] + particle.velocity[1] * particle.velocity[1];
         }
-        writer.print(time + ", " + energy + " \n");
+        writer.print(time + ", " + collisionCount + ", " + energy + " \n");
     }
 }
