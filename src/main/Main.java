@@ -15,7 +15,10 @@ import java.util.ArrayList;
 public class Main extends JPanel{
 
     static int paintFreqCounter = 0;
-    static int nrOfCollisionsPerTimeStepCounter = 0;
+    static int nrCollisionsPerTimeStep = 0;
+    public static int nrOverlapCollisions = 0;
+
+    static double runTime;
     static BinaryTree tree;
     static Particle[] particles;
     static Boundary[] boundaries;
@@ -23,9 +26,6 @@ public class Main extends JPanel{
 
     static public SymmetricCollisionHeap heapPP;
     static public CollisionHeap heapPB;
-
-    public static boolean lastIsOverlap;
-    public static int nrOverlapCollisions = 0;
 
     public static Settings settings = new Settings1();
 
@@ -48,7 +48,7 @@ public class Main extends JPanel{
             writer = new PrintWriter(file);
         }
 
-        main.run(settings.getTimeStep(),settings.getEndTime());
+        main.run(settings.getTimeStep(), settings.getEndTime());
 
     }
 
@@ -72,6 +72,10 @@ public class Main extends JPanel{
         ArrayList<CollisionEvent> events = new ArrayList<>(); //temporary storing of CollisionEvents
 
         while (time < endTime) {
+            runTime = System.nanoTime();
+            nrOverlapCollisions = 0;
+            nrCollisionsPerTimeStep = 0;
+
 
             heapPP = new SymmetricCollisionHeap(particles.length);
             heapPB = new CollisionHeap(particles.length, boundaries.length);
@@ -149,6 +153,8 @@ public class Main extends JPanel{
                     break;
                 } else if (tMinPP < tMinPB) {
                     try {
+                        ++nrCollisionsPerTimeStep;
+
                         minPP = heapPP.removeMin();
 
 //                        lastIsOverlap = minPP.t() == 0;
@@ -185,6 +191,8 @@ public class Main extends JPanel{
                     }
                 } else if (tMinPP > tMinPB) {
                     try {
+                        ++nrCollisionsPerTimeStep;
+
                         minPB = heapPB.removeMin();
 
                         Collision.resolveCollision(particles[minPB.i()], boundaries[minPB.j()], minPB.t());
@@ -212,7 +220,6 @@ public class Main extends JPanel{
                         e.printStackTrace();
                     }
                 }
-                nrOfCollisionsPerTimeStepCounter++;
             }
 
             //project forward particles
@@ -232,7 +239,8 @@ public class Main extends JPanel{
             paintFreqCounter++;
 
             if (settings.isPrintOut()) {
-                printInfoPerTime(time, nrOfCollisionsPerTimeStepCounter, writer);
+                runTime -= System.nanoTime();
+                printInfoPerTime(time, nrCollisionsPerTimeStep, nrOverlapCollisions, -runTime, writer);
             }
 
             if (paint && paintFreqCounter == settings.getPaintFrequency()) {
@@ -246,10 +254,6 @@ public class Main extends JPanel{
                     e.printStackTrace();
                 }
             }
-
-            nrOfCollisionsPerTimeStepCounter = 0;
-
-
         }
     }
 
@@ -365,11 +369,13 @@ public class Main extends JPanel{
         }
     }
 
-    public static void printInfoPerTime (double time, double collisionCount, PrintWriter writer){
+    public static void printInfoPerTime (double time, double collisionCount, double overlapCollisions,
+                                         double runTime, PrintWriter writer){
         double energy = 0;
         for (Particle particle : particles) {
-            energy += particle.velocity[0] * particle.velocity[0] + particle.velocity[1] * particle.velocity[1];
+            energy += 0.5 * particle.mass * (particle.velocity[0] * particle.velocity[0] + particle.velocity[1] * particle.velocity[1])
+                      + particle.mass * 9.81 * particle.position[1];
         }
-        writer.print(time + ", " + collisionCount + ", " + energy + " \n");
+        writer.print(time + ", " + runTime + ", " + collisionCount + ", " + overlapCollisions + ", " + energy + " \n");
     }
 }
