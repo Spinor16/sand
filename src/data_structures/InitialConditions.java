@@ -40,7 +40,7 @@ public class InitialConditions extends JPanel {
      */
 
     //constants
-    public final double pRadius = 0.02;
+    public final double pRadius;
     public final double pMass = 1.;
     public final double[] origin = {0,0};
     public double width;
@@ -57,7 +57,7 @@ public class InitialConditions extends JPanel {
     //particle array
     private Particle[] particles;
 
-    public InitialConditions(int nParticles, double width, double height, double angle) {
+    public InitialConditions(int nParticles, double width, double height, double angle, double radius, boolean reflectOnBoundary) {
         /*
         width and height of box, should be larger than double the radius of the particle (r=1).
         Angle between 0 and pi
@@ -66,15 +66,16 @@ public class InitialConditions extends JPanel {
         setHeight(height);
         setAngle(angle);
         this.nParticles = nParticles;
+        this.pRadius = radius;
 
 //        nParticles = (int) (width/(2*particleDistanceInitial+2*pRadius));
         IO.print(nParticles);
         particles = new Particle[nParticles];
         for (int i = 0; i < particles.length/2; i++) {
-            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, 0.6*pRadius, 0.6*0.6*pMass);
+            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, 0.6*pRadius, 0.6*0.6*pMass, reflectOnBoundary);
         }
         for (int i = particles.length/2; i < particles.length; i++) {
-            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, pRadius, pMass);
+            particles[i] = new Particle(new double[]{0,0}, new double[]{0,0}, pRadius, pMass, reflectOnBoundary);
         }
         makeBoundary();
         makeParticles();

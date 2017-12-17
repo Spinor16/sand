@@ -26,6 +26,11 @@ public interface Settings {
 
     public int getPaintFrequency();
 
+    public boolean getReflectOnBoundary();
+
+    public double getRadius();
+
     public boolean isPrintOut();
+
 
 }

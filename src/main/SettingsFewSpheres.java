@@ -2,17 +2,20 @@ package main;
 
 import data_structures.InitialConditions;
 
-public class Settings1 implements Settings{
+public class SettingsFewSpheres implements Settings{
 
-    int resolution = 5;
-    int nNearestNeighbours = 20;
-    double nParticles = 100;
+    int resolution = 1;
+    int nNearestNeighbours = 7;
+    //double nParticles = 100;
+    double radius = 0.015;
 
-    double coefficient_of_restitution = 0.3; //total energy loss -> 0, no energy loss -> 1
+    double coefficient_of_restitution = 0.4; //total energy loss -> 0, no energy loss -> 1
     int maxNrOverlapCollisions = 10; //how many times resolve overlap before resolving a real collision again
 
     double mom_coeff = 0.01;      //particle particle
-    double restitution_velocity = 0.2; //particle boundary
+    double restitution_velocity = 0.1; //particle boundary
+
+    boolean reflectOnBoundary = true;
 
     double timeStep = 0.0005;
     double endTime = 200;
@@ -22,7 +25,7 @@ public class Settings1 implements Settings{
 
 
     InitialConditions initialConditions = new InitialConditions(resolution * nNearestNeighbours,
-                                                                1,1, Math.PI/2);
+            1,1, Math.PI/2, radius, reflectOnBoundary);
 
     @Override
     public int getResolution() {
@@ -79,7 +82,15 @@ public class Settings1 implements Settings{
         return getPaintFrequency;
     }
 
+    @Override
+    public boolean getReflectOnBoundary() { return reflectOnBoundary; }
+
+    @Override
+    public double getRadius() { return radius; }
+
     public boolean isPrintOut() {
         return printOut;
     }
+
+
 }

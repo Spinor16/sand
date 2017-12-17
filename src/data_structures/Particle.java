@@ -22,13 +22,14 @@ public class Particle implements CollisionPartner{
     public final double radius;
     public int index;
 
+    public boolean reflectOnBoundary;
     public int colorIndex;
 
     public ArrayList<Boundary> touchingBoundaries = new ArrayList<>();
 
     private double[] temp = new double[]{0,0};
 
-    public Particle(double[] position, double[] velocity, double radius, double mass) {
+    public Particle(double[] position, double[] velocity, double radius, double mass, boolean reflectOnBoundary) {
         //mass
         this.mass = mass;
 
@@ -40,6 +41,8 @@ public class Particle implements CollisionPartner{
         //velocity
         this.velocity = velocity;
 
+        //reflect on Boundary
+        this.reflectOnBoundary = reflectOnBoundary;
     }
 
     int dimensions() { return position.length; }
@@ -98,7 +101,7 @@ public class Particle implements CollisionPartner{
     }
 
     public void setTouchingBoundary(Boundary boundary){
-        reflectOnBoundary(boundary);
+        reflectOnBoundary(boundary, reflectOnBoundary);
         if (!touchingBoundaries.contains(boundary)){
             touchingBoundaries.add(boundary);
         }
@@ -119,9 +122,9 @@ public class Particle implements CollisionPartner{
         return g;
     }
 
-    public void reflectOnBoundary(Boundary boundary){
+    public void reflectOnBoundary(Boundary boundary, boolean reflectOnBoundary){
         double vn = Collision.getVn(this, boundary);
-        if (vn > 0){
+        if (vn > 0 && reflectOnBoundary){
             double reflectionVelocity = Math.max(2 * vn, Main.settings.getRestitution_velocity());
             VectorCalculus.minusSE(velocity, VectorCalculus.mult(temp, reflectionVelocity, boundary.normal));
         }
