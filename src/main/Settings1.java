@@ -4,15 +4,15 @@ import data_structures.InitialConditions;
 
 public class Settings1 implements Settings{
 
-    int resolution = 50;
+    int resolution = 5;
     int nNearestNeighbours = 20;
     double nParticles = 100;
 
-    double coefficient_of_restitution = 0.3;
-    int maxNrOverlapCollisions = 10;
+    double coefficient_of_restitution = 0.3; //total energy loss -> 0, no energy loss -> 1
+    int maxNrOverlapCollisions = 10; //how many times resolve overlap before resolving a real collision again
 
-    double mom_coeff = 0.0001;
-    double restitution_velocity = 1;
+    double mom_coeff = 0.01;      //particle particle
+    double restitution_velocity = 0.2; //particle boundary
 
     double timeStep = 0.0005;
     double endTime = 200;
