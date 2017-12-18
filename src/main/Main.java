@@ -30,8 +30,9 @@ public class Main extends JPanel{
 
     //public static Settings settings = new SettingsFallThroughBoundary();
     //public static Settings settings = new SettingsMergingSpheres();
-    public static Settings settings = new SettingsSmooth();
+    //public static Settings settings = new SettingsSmooth();
     //public static Settings settings = new SettingsFewSpheres();
+    public static Settings settings = new Settings400Spheres();
     //public static Settings settings = new Settings1000Spheres();
     //public static Settings settings = new Settings5000Spheres();
 
